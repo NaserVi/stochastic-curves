@@ -19,7 +19,7 @@ import net.finmath.stochastic.RandomVariableInterface;
  * 
  * @author Christian Fries
  */
-public interface CurveBuilderInterface {
+public interface CurveStochasticBuilderInterface {
 
 	/**
 	 * Build the curve. The method returns the curve object.
@@ -28,7 +28,7 @@ public interface CurveBuilderInterface {
 	 * @return The curve according to the specification.
 	 * @throws CloneNotSupportedException Thrown if the curve could not be build (likely due to a template throwing {@link CloneNotSupportedException}.
 	 */
-	CurveInterface build() throws CloneNotSupportedException;
+	CurveStochasticInterface build() throws CloneNotSupportedException;
 
 	/**
 	 * Add a point to the curve.
@@ -38,5 +38,5 @@ public interface CurveBuilderInterface {
 	 * @param isParameter A boolean, specifying weather the point should be considered a free parameter (true) or not (false). Fee parameters can be used to create a clone with modified values, see {@link Curve#getCloneForParameter(double[])}
 	 * @return A self reference to this curve build object.
 	 */
-	CurveBuilderInterface addPoint(double time, RandomVariableInterface value, boolean isParameter);
+	CurveStochasticBuilderInterface addPoint(double time, RandomVariableInterface value, boolean isParameter);
 }

@@ -26,7 +26,7 @@ import net.finmath.time.businessdaycalendar.BusinessdayCalendarInterface;
  * 
  * @author Christian Fries
  */
-public class ForwardCurveStochastic extends AbstractForwardCurve implements Serializable {
+public class ForwardCurveStochastic extends AbstractForwardCurveStochastic implements Serializable {
 
 	private static final long serialVersionUID = -4126228588123963885L;
 

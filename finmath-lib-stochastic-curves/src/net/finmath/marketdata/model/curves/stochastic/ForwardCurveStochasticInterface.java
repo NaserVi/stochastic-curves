@@ -13,7 +13,7 @@ import net.finmath.stochastic.RandomVariableInterface;
  * 
  * @author Christian Fries
  */
-public interface ForwardCurveInterface extends CurveInterface {
+public interface ForwardCurveStochasticInterface extends CurveStochasticInterface {
 
 	/**
 	 * Returns the forward for the corresponding fixing time.

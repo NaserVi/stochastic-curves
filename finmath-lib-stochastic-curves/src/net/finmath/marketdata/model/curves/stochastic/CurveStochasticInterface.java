@@ -16,7 +16,7 @@ import net.finmath.stochastic.RandomVariableInterface;
  * 
  * @author Christian Fries
  */
-public interface CurveInterface extends  Cloneable {
+public interface CurveStochasticInterface extends  Cloneable {
 
 	/**
 	 * Get the name of the curve.
@@ -74,8 +74,8 @@ public interface CurveInterface extends  Cloneable {
 	 * @return An object implementing the CurveBuilderInterface where the underlying curve is a clone of this curve.
 	 * @throws CloneNotSupportedException Thrown, when this curve could not be cloned.
 	 */
-	CurveBuilderInterface getCloneBuilder() throws CloneNotSupportedException;
+	CurveStochasticBuilderInterface getCloneBuilder() throws CloneNotSupportedException;
 
 	
-    CurveInterface getCloneForParameter(RandomVariableInterface[] value) throws CloneNotSupportedException;
+    CurveStochasticInterface getCloneForParameter(RandomVariableInterface[] value) throws CloneNotSupportedException;
 }

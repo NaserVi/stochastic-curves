@@ -14,7 +14,7 @@ import net.finmath.stochastic.RandomVariableInterface;
  * 
  * @author Christian Fries
  */
-public interface DiscountCurveInterface extends CurveInterface {
+public interface DiscountCurveStochasticInterface extends CurveStochasticInterface {
 
 	/**
 	 * Returns the discount factor for the corresponding maturity. This getter is not optimized for performance.

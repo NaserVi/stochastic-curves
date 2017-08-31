@@ -29,7 +29,7 @@ import net.finmath.time.businessdaycalendar.BusinessdayCalendarInterface;
  * 
  * @author Christian Fries
  */
-public class ForwardCurveFromDiscountCurve extends AbstractForwardCurve implements Serializable {
+public class ForwardCurveFromDiscountCurveStochastic extends AbstractForwardCurveStochastic implements Serializable {
 
 	private static final long serialVersionUID = -4126228588123963885L;
 	private final String referenceDiscountCurveForForwardsName; // The (pseudo-)discount curve that the forwards are calculated from. Note that this is in general different from the discount curve associated with the forwards
@@ -50,7 +50,7 @@ public class ForwardCurveFromDiscountCurve extends AbstractForwardCurve implemen
 	 * @param daycountScaling The scaling factor applied to the paymentOffset measured in ACT/365.
 	 * @param periodOffset An offset in ACT/365 applied to the fixing to construct the period start (the negative of the fixingOffset of the period).
 	 */
-	public ForwardCurveFromDiscountCurve(String name, String referenceDiscountCurveName, String discountCurveName, LocalDate referenceDate, String paymentOffsetCode, BusinessdayCalendarInterface paymentOffsetBusinessdayCalendar, BusinessdayCalendarInterface.DateRollConvention paymentOffsetDateRollConvention, double daycountScaling, double periodOffset, AbstractRandomVariableFactory factory) {
+	public ForwardCurveFromDiscountCurveStochastic(String name, String referenceDiscountCurveName, String discountCurveName, LocalDate referenceDate, String paymentOffsetCode, BusinessdayCalendarInterface paymentOffsetBusinessdayCalendar, BusinessdayCalendarInterface.DateRollConvention paymentOffsetDateRollConvention, double daycountScaling, double periodOffset, AbstractRandomVariableFactory factory) {
 		super(name, referenceDate, paymentOffsetCode, paymentOffsetBusinessdayCalendar, paymentOffsetDateRollConvention, discountCurveName, factory);
 
 		this.referenceDiscountCurveForForwardsName = referenceDiscountCurveName;
@@ -71,7 +71,7 @@ public class ForwardCurveFromDiscountCurve extends AbstractForwardCurve implemen
 	 * @param daycountScaling The scaling factor applied to the paymentOffset measured in ACT/365.
 	 * @param periodOffset An offset in ACT/365 applied to the fixing to construct the period start (the negative of the fixingOffset of the period).
 	 */
-	public ForwardCurveFromDiscountCurve(String name, String referenceDiscountCurveName, LocalDate referenceDate, String paymentOffsetCode, BusinessdayCalendarInterface paymentOffsetBusinessdayCalendar, BusinessdayCalendarInterface.DateRollConvention paymentOffsetDateRollConvention, double daycountScaling, double periodOffset, AbstractRandomVariableFactory factory) {
+	public ForwardCurveFromDiscountCurveStochastic(String name, String referenceDiscountCurveName, LocalDate referenceDate, String paymentOffsetCode, BusinessdayCalendarInterface paymentOffsetBusinessdayCalendar, BusinessdayCalendarInterface.DateRollConvention paymentOffsetDateRollConvention, double daycountScaling, double periodOffset, AbstractRandomVariableFactory factory) {
 		this(name, referenceDiscountCurveName, referenceDiscountCurveName, referenceDate, paymentOffsetCode, paymentOffsetBusinessdayCalendar, paymentOffsetDateRollConvention, daycountScaling, periodOffset, factory);
 	}
 
@@ -86,7 +86,7 @@ public class ForwardCurveFromDiscountCurve extends AbstractForwardCurve implemen
 	 * @param paymentOffsetBusinessdayCalendar The calendar used to generate the payment date from the paymentOffetCode.
 	 * @param paymentOffsetDateRollConvention The date roll convention used to generate the payment date from the paymentOffsetCode.
 	 */
-	public ForwardCurveFromDiscountCurve(String name, String referenceDiscountCurveName, LocalDate referenceDate, String paymentOffsetCode, BusinessdayCalendarInterface paymentOffsetBusinessdayCalendar, BusinessdayCalendarInterface.DateRollConvention paymentOffsetDateRollConvention, AbstractRandomVariableFactory factory) {
+	public ForwardCurveFromDiscountCurveStochastic(String name, String referenceDiscountCurveName, LocalDate referenceDate, String paymentOffsetCode, BusinessdayCalendarInterface paymentOffsetBusinessdayCalendar, BusinessdayCalendarInterface.DateRollConvention paymentOffsetDateRollConvention, AbstractRandomVariableFactory factory) {
 		this(name, referenceDiscountCurveName, referenceDate, paymentOffsetCode, paymentOffsetBusinessdayCalendar, paymentOffsetDateRollConvention, 1.0, 0.0, factory);
 	}
 
@@ -99,7 +99,7 @@ public class ForwardCurveFromDiscountCurve extends AbstractForwardCurve implemen
 	 * @param referenceDate The reference date used in the interpretation of times (i.e., the referenceDate where t=0).
 	 * @param paymentOffsetCode The payment offset. If null, the parameter p has to be provided to the getForward method.
 	 */
-	public ForwardCurveFromDiscountCurve(String name, String referenceDiscountCurveName, LocalDate referenceDate, String paymentOffsetCode, AbstractRandomVariableFactory factory) {
+	public ForwardCurveFromDiscountCurveStochastic(String name, String referenceDiscountCurveName, LocalDate referenceDate, String paymentOffsetCode, AbstractRandomVariableFactory factory) {
 		this(name, referenceDiscountCurveName, referenceDate, paymentOffsetCode, new BusinessdayCalendarExcludingWeekends(), BusinessdayCalendarInterface.DateRollConvention.FOLLOWING, factory);
 	}
 
@@ -117,7 +117,7 @@ public class ForwardCurveFromDiscountCurve extends AbstractForwardCurve implemen
 	 * @param referenceDate The reference date used in the interpretation of times (i.e., the referenceDate where t=0).
 	 * @param paymentOffsetCode The payment offset. If null, the parameter p has to be provided to the getForward method.
 	 */
-	public ForwardCurveFromDiscountCurve(String referenceDiscountCurveName, LocalDate referenceDate, String paymentOffsetCode, AbstractRandomVariableFactory factory) {
+	public ForwardCurveFromDiscountCurveStochastic(String referenceDiscountCurveName, LocalDate referenceDate, String paymentOffsetCode, AbstractRandomVariableFactory factory) {
 		this("ForwardCurveFromDiscountCurve(" +  referenceDiscountCurveName + "," + paymentOffsetCode + ")", referenceDiscountCurveName, referenceDate, paymentOffsetCode, factory);
 	}
 
@@ -136,7 +136,7 @@ public class ForwardCurveFromDiscountCurve extends AbstractForwardCurve implemen
 	{
 		if(model==null)
 			throw new IllegalArgumentException(this.getName() + ": model==null");
-		DiscountCurveInterface referenceDiscountCurveForForwards = model.getDiscountCurve(referenceDiscountCurveForForwardsName); // do not use discountCurveName here (usually this is an OIS curve)
+		DiscountCurveStochasticInterface referenceDiscountCurveForForwards = model.getDiscountCurve(referenceDiscountCurveForForwardsName); // do not use discountCurveName here (usually this is an OIS curve)
 		if(referenceDiscountCurveForForwards==null)
 			throw new IllegalArgumentException(this.getName() + ": referenceDiscountCurveForForwards " + referenceDiscountCurveForForwardsName + " not found in the model:\n" + model.toString());
 		if(Double.isNaN(paymentOffset) || paymentOffset<=0.0)

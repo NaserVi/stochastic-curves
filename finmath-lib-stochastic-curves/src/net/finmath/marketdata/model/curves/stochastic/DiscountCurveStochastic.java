@@ -36,7 +36,7 @@ import net.finmath.time.TimeDiscretizationInterface;
  * @see net.finmath.marketdata.products.SwapLeg
  * @see net.finmath.marketdata.model.curves.Curve
  */
-public class DiscountCurveStochastic extends CurveStochastic implements Serializable, DiscountCurveInterface {
+public class DiscountCurveStochastic extends CurveStochastic implements Serializable, DiscountCurveStochasticInterface {
 
 	private static final long serialVersionUID = -4126228588123963885L;
 
@@ -353,7 +353,7 @@ public class DiscountCurveStochastic extends CurveStochastic implements Serializ
 	 * @param forwardRates Array of forward rates.
 	 * @return A new discount factor object.
 	 */
-	public static DiscountCurveInterface createDiscountFactorsFromForwardRates(String name, TimeDiscretizationInterface tenor, RandomVariableInterface [] forwardRates, AbstractRandomVariableFactory factory) {
+	public static DiscountCurveStochasticInterface createDiscountFactorsFromForwardRates(String name, TimeDiscretizationInterface tenor, RandomVariableInterface [] forwardRates, AbstractRandomVariableFactory factory) {
 		DiscountCurveStochastic discountFactors = new DiscountCurveStochastic(name, factory);
 
 		RandomVariableInterface  df = factory.createRandomVariable(1.0);

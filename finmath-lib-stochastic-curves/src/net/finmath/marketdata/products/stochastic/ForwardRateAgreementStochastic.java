@@ -3,9 +3,9 @@ package net.finmath.marketdata.products.stochastic;
 import net.finmath.marketdata.model.stochastic.AnalyticModelStochasticInterface;
 import net.finmath.stochastic.RandomVariableInterface;
 import net.finmath.marketdata.model.curves.stochastic.DiscountCurveStochastic;
-import net.finmath.marketdata.model.curves.stochastic.DiscountCurveInterface;
+import net.finmath.marketdata.model.curves.stochastic.DiscountCurveStochasticInterface;
 import net.finmath.marketdata.model.curves.stochastic.ForwardCurveStochastic;
-import net.finmath.marketdata.model.curves.stochastic.ForwardCurveInterface;
+import net.finmath.marketdata.model.curves.stochastic.ForwardCurveStochasticInterface;
 import net.finmath.time.ScheduleInterface;
 
 /**
@@ -69,12 +69,12 @@ public class ForwardRateAgreementStochastic extends AbstractAnalyticProductStoch
 			throw new IllegalArgumentException("model==null");
 		}
 		
-		DiscountCurveInterface discountCurve = model.getDiscountCurve(discountCurveName);
+		DiscountCurveStochasticInterface discountCurve = model.getDiscountCurve(discountCurveName);
 		if(discountCurve==null) {
 			throw new IllegalArgumentException("No discount curve with name '" + discountCurveName + "' was found in the model:\n" + model.toString());
 		}
 		
-		ForwardCurveInterface forwardCurve = model.getForwardCurve(forwardCurveName);
+		ForwardCurveStochasticInterface forwardCurve = model.getForwardCurve(forwardCurveName);
 		if(forwardCurve==null && forwardCurveName!=null && forwardCurveName.length()>0) {
 			throw new IllegalArgumentException("No forward curve with name '" + forwardCurveName + "' was found in the model:\n" + model.toString());
 		}
@@ -104,7 +104,7 @@ public class ForwardRateAgreementStochastic extends AbstractAnalyticProductStoch
 		if(model==null) 
 			throw new IllegalArgumentException("model==null");
 		
-		ForwardCurveInterface forwardCurve = model.getForwardCurve(forwardCurveName);
+		ForwardCurveStochasticInterface forwardCurve = model.getForwardCurve(forwardCurveName);
 		if(forwardCurve==null) 
 			throw new IllegalArgumentException("No forward curve of name '" + forwardCurveName + "' found in given model:\n" + model.toString());
 

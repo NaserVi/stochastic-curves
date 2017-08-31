@@ -51,7 +51,7 @@ import net.finmath.time.FloatingpointDate;
  * 
  * @author Christian Fries
  */
-public class CurveStochastic extends AbstractCurve implements Serializable, Cloneable {
+public class CurveStochastic extends AbstractCurveStochastic implements Serializable, Cloneable {
 
 	/**
 	 * Possible interpolation methods.
@@ -73,10 +73,10 @@ public class CurveStochastic extends AbstractCurve implements Serializable, Clon
 	//	AKIMA,
 	//	/** Akima interpolation (C1 sub-spline interpolation) with a smoothing in the weights. **/
 	//	AKIMA_CONTINUOUS,
-	//	/** Harmonic spline interpolation (C1 sub-spline interpolation). **/
-	//	HARMONIC_SPLINE,
-	//	/** Harmonic spline interpolation (C1 sub-spline interpolation) with a monotonic filtering at the boundary points. **/	
-	//	HARMONIC_SPLINE_WITH_MONOTONIC_FILTERING
+		/** Harmonic spline interpolation (C1 sub-spline interpolation). **/
+		HARMONIC_SPLINE,
+		/** Harmonic spline interpolation (C1 sub-spline interpolation) with a monotonic filtering at the boundary points. **/	
+		HARMONIC_SPLINE_WITH_MONOTONIC_FILTERING
        
 	}
 
@@ -147,7 +147,7 @@ public class CurveStochastic extends AbstractCurve implements Serializable, Clon
 	 * 
 	 * @author Christian Fries
 	 */
-	public static class CurveBuilder implements CurveBuilderInterface {
+	public static class CurveBuilder implements CurveStochasticBuilderInterface {
 		private CurveStochastic curve = null;
 
 		/**
@@ -181,7 +181,7 @@ public class CurveStochastic extends AbstractCurve implements Serializable, Clon
 		 * @see net.finmath.marketdata.model.curves.CurveBuilderInterface#build()
 		 */
 		@Override
-		public CurveInterface build() throws CloneNotSupportedException {
+		public CurveStochasticInterface build() throws CloneNotSupportedException {
 			CurveStochastic buildCurve = curve;
 			curve = null;
 			return buildCurve;
@@ -193,7 +193,7 @@ public class CurveStochastic extends AbstractCurve implements Serializable, Clon
 		 * @param interpolationMethod The interpolation method of the curve.
 		 * @return A self reference to this curve build object.
 		 */
-		public CurveBuilderInterface setInterpolationMethod(InterpolationMethod interpolationMethod) {
+		public CurveStochasticBuilderInterface setInterpolationMethod(InterpolationMethod interpolationMethod) {
 			curve.interpolationMethod = interpolationMethod;
 			return this;
 		}
@@ -204,7 +204,7 @@ public class CurveStochastic extends AbstractCurve implements Serializable, Clon
 		 * @param extrapolationMethod The extrapolation method of the curve.
 		 * @return A self reference to this curve build object.
 		 */
-		public CurveBuilderInterface setExtrapolationMethod(ExtrapolationMethod extrapolationMethod) {
+		public CurveStochasticBuilderInterface setExtrapolationMethod(ExtrapolationMethod extrapolationMethod) {
 			curve.extrapolationMethod = extrapolationMethod;
 			return this;
 		}
@@ -215,7 +215,7 @@ public class CurveStochastic extends AbstractCurve implements Serializable, Clon
 		 * @param interpolationEntity The interpolation entity of the curve.
 		 * @return A self reference to this curve build object.
 		 */
-		public CurveBuilderInterface setInterpolationEntity(InterpolationEntity interpolationEntity) {
+		public CurveStochasticBuilderInterface setInterpolationEntity(InterpolationEntity interpolationEntity) {
 			curve.interpolationEntity = interpolationEntity;
 			return this;
 		}
@@ -224,7 +224,7 @@ public class CurveStochastic extends AbstractCurve implements Serializable, Clon
 		 * @see net.finmath.marketdata.model.curves.CurveBuilderInterface#addPoint(double, double, boolean)
 		 */
 		@Override
-		public CurveBuilderInterface addPoint(double time, RandomVariableInterface value, boolean isParameter) {
+		public CurveStochasticBuilderInterface addPoint(double time, RandomVariableInterface value, boolean isParameter) {
 			curve.addPoint(time, value, isParameter);
 			return this;
 		}
@@ -239,7 +239,6 @@ public class CurveStochastic extends AbstractCurve implements Serializable, Clon
 	private RationalFunctionInterpolationRV	rationalFunctionInterpolation =  null;
 	private final Object					rationalFunctionInterpolationLazyInitLock = new Object();
 	private SoftReference<Map<Double, RandomVariableInterface>> curveCacheReference = null;
-	//private LIBORModelMonteCarloSimulationInterface model;
 	private AbstractRandomVariableFactory randomVariableFactory;
 
 	private static final long serialVersionUID = -4126228588123963885L;
@@ -264,14 +263,12 @@ public class CurveStochastic extends AbstractCurve implements Serializable, Clon
 			     InterpolationEntity interpolationEntity, 
 			     double[] times, 
 			     RandomVariableInterface[] values,
-			     /*, LIBORModelMonteCarloSimulationInterface model*/
 			     AbstractRandomVariableFactory randomVariableFactory) {
 		super(name, referenceDate);
 		this.interpolationMethod	= interpolationMethod;
 		this.extrapolationMethod	= extrapolationMethod;
 		this.interpolationEntity	= interpolationEntity;
 		this.randomVariableFactory  = randomVariableFactory;
-		//this.model                  = model;
 		if(times.length != values.length) throw new IllegalArgumentException("Length of times not equal to length of values.");
 		for(int i=0; i<times.length; i++) this.addPoint(times[i], values[i], false);
 	}
@@ -291,14 +288,13 @@ public class CurveStochastic extends AbstractCurve implements Serializable, Clon
 			        InterpolationMethod interpolationMethod, 
 			        ExtrapolationMethod extrapolationMethod, 
 			        InterpolationEntity interpolationEntity,
-			        /*, LIBORModelMonteCarloSimulationInterface model*/
 			        AbstractRandomVariableFactory randomVariableFactory) {
 		
 		super(name, referenceDate);
 		this.interpolationMethod	= interpolationMethod;
 		this.extrapolationMethod	= extrapolationMethod;
 		this.interpolationEntity	= interpolationEntity;
-		//this.model                  = model;
+		this.randomVariableFactory  = randomVariableFactory;
 		
 	}
 
@@ -369,7 +365,7 @@ public class CurveStochastic extends AbstractCurve implements Serializable, Clon
 	 * @param isParameter If true, then this point is served via {@link #getParameter()} and changed via {@link #getCloneForParameter(double[])}, i.e., it can be calibrated.
 	 */
 	protected void addPoint(double time, RandomVariableInterface value, boolean isParameter) {
-		//synchronized (rationalFunctionInterpolationLazyInitLock) {
+		synchronized (rationalFunctionInterpolationLazyInitLock) {
 			if(interpolationEntity == InterpolationEntity.LOG_OF_VALUE_PER_TIME && time == 0) {
 				boolean containsOne = false; int index=0;
 				for(int i = 0; i< value.size(); i++){if(value.get(i)==1.0) {containsOne = true; index=i; break;}}
@@ -399,7 +395,7 @@ public class CurveStochastic extends AbstractCurve implements Serializable, Clon
 			}
 			this.rationalFunctionInterpolation = null;
 			this.curveCacheReference = null;
-		//}
+		}
 	}
 
 	/**
@@ -430,7 +426,7 @@ public class CurveStochastic extends AbstractCurve implements Serializable, Clon
 	}
 
 	protected int getTimeIndex(double time) {
-		Point point = new Point(time, randomVariableFactory.createRandomVariable(13.1), false);
+		Point point = new Point(time, randomVariableFactory.createRandomVariable(Double.NaN), false);
 		int index =  java.util.Collections.binarySearch(points, point);
 		return index;
 	}
@@ -505,7 +501,7 @@ public class CurveStochastic extends AbstractCurve implements Serializable, Clon
 	}
 
 	@Override
-	public CurveInterface getCloneForParameter(RandomVariableInterface[] parameter) throws CloneNotSupportedException {
+	public CurveStochasticInterface getCloneForParameter(RandomVariableInterface[] parameter) throws CloneNotSupportedException {
 		if(Arrays.equals(parameter, getParameter())) return this;
 		CurveStochastic newCurve = (CurveStochastic) this.clone();
 		newCurve.setParameterPrivate(parameter);
@@ -514,7 +510,7 @@ public class CurveStochastic extends AbstractCurve implements Serializable, Clon
 	}
 
 	@Override
-	public CurveBuilderInterface getCloneBuilder() throws CloneNotSupportedException {
+	public CurveStochasticBuilderInterface getCloneBuilder() throws CloneNotSupportedException {
 		CurveBuilder curveBuilder = new CurveBuilder(this);
 		return curveBuilder;
 	}

@@ -8,9 +8,9 @@ package net.finmath.marketdata.model.stochastic;
 import java.util.Map;
 import java.util.Set;
 
-import net.finmath.marketdata.model.curves.stochastic.CurveInterface;
-import net.finmath.marketdata.model.curves.stochastic.DiscountCurveInterface;
-import net.finmath.marketdata.model.curves.stochastic.ForwardCurveInterface;
+import net.finmath.marketdata.model.curves.stochastic.CurveStochasticInterface;
+import net.finmath.marketdata.model.curves.stochastic.DiscountCurveStochasticInterface;
+import net.finmath.marketdata.model.curves.stochastic.ForwardCurveStochasticInterface;
 //import net.finmath.marketdata.model.volatilities.AbstractVolatilitySurface;
 //import net.finmath.marketdata.model.volatilities.VolatilitySurfaceInterface;
 import net.finmath.modelling.ModelInterface;
@@ -28,7 +28,7 @@ public interface AnalyticModelStochasticInterface extends ModelInterface, Clonea
 	 * @param name The name of the curve.
 	 * @return The curve with the corresponding name, given that it is part of this model, otherwise null is return.
 	 */
-	CurveInterface getCurve(String name);
+	CurveStochasticInterface getCurve(String name);
 
 	/**
 	 * Add a reference to a given curve under a given name to this model. It is not necessary that the name given agrees with
@@ -38,7 +38,7 @@ public interface AnalyticModelStochasticInterface extends ModelInterface, Clonea
 	 * @param curve The curve.
 	 * @return A clone of this model, containing the curves of this model which are not known under the given name and the new curve under the given name.
 	 */
-	AnalyticModelStochasticInterface addCurve(String name, CurveInterface curve);
+	AnalyticModelStochasticInterface addCurve(String name, CurveStochasticInterface curve);
 
 	/**
 	 * Create a new analytic model consisting of a clone of this one together with the given curves added.
@@ -46,7 +46,7 @@ public interface AnalyticModelStochasticInterface extends ModelInterface, Clonea
 	 * @param curves The set of curves to add.
 	 * @return A new analytic model.
 	 */
-	AnalyticModelStochasticInterface addCurves(CurveInterface... curves);
+	AnalyticModelStochasticInterface addCurves(CurveStochasticInterface... curves);
 
 	/**
 	 * Create a new analytic model consisting of a clone of this one together with the given curves added.
@@ -54,10 +54,10 @@ public interface AnalyticModelStochasticInterface extends ModelInterface, Clonea
 	 * @param curves The list of curves to add.
 	 * @return A new analytic model.
 	 */
-	AnalyticModelStochasticInterface addCurves(Set<CurveInterface> curves);
+	AnalyticModelStochasticInterface addCurves(Set<CurveStochasticInterface> curves);
 
 	@Deprecated
-	void setCurve(CurveInterface curve);
+	void setCurve(CurveStochasticInterface curve);
 
 	/**
 	 * Returns a discount curve for a given name.
@@ -65,7 +65,7 @@ public interface AnalyticModelStochasticInterface extends ModelInterface, Clonea
 	 * @param discountCurveName The name of the requested curve.
 	 * @return discount curve corresponding to discountCurveName or null if no discountCurve with this name exists in the model
 	 */
-	DiscountCurveInterface getDiscountCurve(String discountCurveName);
+	DiscountCurveStochasticInterface getDiscountCurve(String discountCurveName);
 
 	/**
 	 * Returns a forward curve for a given name.
@@ -73,7 +73,7 @@ public interface AnalyticModelStochasticInterface extends ModelInterface, Clonea
 	 * @param forwardCurveName The name of the requested curve.
 	 * @return forward curve corresponding to forwardCurveName or null if no forwardCurve with this name exists in the model
 	 */
-	ForwardCurveInterface getForwardCurve(String forwardCurveName);
+	ForwardCurveStochasticInterface getForwardCurve(String forwardCurveName);
 
 	//VolatilitySurfaceInterface getVolatilitySurface(String name);
 

@@ -12,9 +12,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import net.finmath.marketdata.calibration.ParameterObjectInterface;
-import net.finmath.marketdata.model.curves.stochastic.CurveInterface;
-import net.finmath.marketdata.model.curves.stochastic.DiscountCurveInterface;
-import net.finmath.marketdata.model.curves.stochastic.ForwardCurveInterface;
+import net.finmath.marketdata.model.curves.stochastic.CurveStochasticInterface;
+import net.finmath.marketdata.model.curves.stochastic.DiscountCurveStochasticInterface;
+import net.finmath.marketdata.model.curves.stochastic.ForwardCurveStochasticInterface;
 
 /**
  * Implements a collection of market data objects (e.g., discount curves, forward curve)
@@ -26,7 +26,7 @@ import net.finmath.marketdata.model.curves.stochastic.ForwardCurveInterface;
  */
 public class AnalyticModelStochastic implements AnalyticModelStochasticInterface, Cloneable {
 
-	private final Map<String, CurveInterface>				curvesMap				= new HashMap<String, CurveInterface>();
+	private final Map<String, CurveStochasticInterface>				curvesMap				= new HashMap<String, CurveStochasticInterface>();
 	//private final Map<String, VolatilitySurfaceInterface>	volatilitySurfaceMap	= new HashMap<String, VolatilitySurfaceInterface>();
 
 	/**
@@ -40,8 +40,8 @@ public class AnalyticModelStochastic implements AnalyticModelStochasticInterface
 	 * 
 	 * @param curves The vector of curves.
 	 */
-	public AnalyticModelStochastic(CurveInterface[] curves) {
-        for (CurveInterface curve : curves) curvesMap.put(curve.getName(), curve);
+	public AnalyticModelStochastic(CurveStochasticInterface[] curves) {
+        for (CurveStochasticInterface curve : curves) curvesMap.put(curve.getName(), curve);
 	}
 	
 	/**
@@ -49,42 +49,42 @@ public class AnalyticModelStochastic implements AnalyticModelStochasticInterface
 	 * 
 	 * @param curves A collection of curves.
 	 */
-	public AnalyticModelStochastic(Collection<CurveInterface> curves) {
-		for(CurveInterface curve : curves) curvesMap.put(curve.getName(), curve);
+	public AnalyticModelStochastic(Collection<CurveStochasticInterface> curves) {
+		for(CurveStochasticInterface curve : curves) curvesMap.put(curve.getName(), curve);
 	}
 
 	/* (non-Javadoc)
 	 * @see net.finmath.marketdata.model.AnalyticModelInterface#getCurve(java.lang.String)
 	 */
 	@Override
-	public CurveInterface getCurve(String name)
+	public CurveStochasticInterface getCurve(String name)
 	{
 		return curvesMap.get(name);
 	}
 
-	public AnalyticModelStochasticInterface addCurve(String name, CurveInterface curve) {
+	public AnalyticModelStochasticInterface addCurve(String name, CurveStochasticInterface curve) {
 		AnalyticModelStochastic newModel = clone();
 		newModel.curvesMap.put(name, curve);
 		return newModel;
 	}
 
-	public AnalyticModelStochasticInterface addCurve(CurveInterface curve) {
+	public AnalyticModelStochasticInterface addCurve(CurveStochasticInterface curve) {
 		AnalyticModelStochastic newModel = clone();
 		newModel.curvesMap.put(curve.getName(), curve);
 		return newModel;
 	}
 
 	@Override
-	public AnalyticModelStochasticInterface addCurves(CurveInterface... curves) {
+	public AnalyticModelStochasticInterface addCurves(CurveStochasticInterface... curves) {
 		AnalyticModelStochastic newModel = clone();
-		for(CurveInterface curve : curves) newModel.curvesMap.put(curve.getName(), curve);
+		for(CurveStochasticInterface curve : curves) newModel.curvesMap.put(curve.getName(), curve);
 		return newModel;
 	}
 
 	@Override
-	public AnalyticModelStochasticInterface addCurves(Set<CurveInterface> curves) {
+	public AnalyticModelStochasticInterface addCurves(Set<CurveStochasticInterface> curves) {
 		AnalyticModelStochastic newModel = clone();
-		for(CurveInterface curve : curves) newModel.curvesMap.put(curve.getName(), curve);
+		for(CurveStochasticInterface curve : curves) newModel.curvesMap.put(curve.getName(), curve);
 		return newModel;
 	}
 
@@ -93,7 +93,7 @@ public class AnalyticModelStochastic implements AnalyticModelStochasticInterface
 	 */
 	@Override
 	@Deprecated
-    public void setCurve(CurveInterface curve)
+    public void setCurve(CurveStochasticInterface curve)
 	{
 		curvesMap.put(curve.getName(), curve);
 	}
@@ -105,26 +105,26 @@ public class AnalyticModelStochastic implements AnalyticModelStochasticInterface
 	 * @deprecated This class will become immutable. Use addCurve instead.
 	 */
 	@Deprecated
-	public void setCurves(CurveInterface[] curves) {
-		for(CurveInterface curve : curves) setCurve(curve);
+	public void setCurves(CurveStochasticInterface[] curves) {
+		for(CurveStochasticInterface curve : curves) setCurve(curve);
 	}
 	
 	@Override
-	public DiscountCurveInterface getDiscountCurve(String discountCurveName) {
-		DiscountCurveInterface discountCurve = null;
-		CurveInterface curve = getCurve(discountCurveName);
-		if(DiscountCurveInterface.class.isInstance(curve))
-			discountCurve = (DiscountCurveInterface)curve;
+	public DiscountCurveStochasticInterface getDiscountCurve(String discountCurveName) {
+		DiscountCurveStochasticInterface discountCurve = null;
+		CurveStochasticInterface curve = getCurve(discountCurveName);
+		if(DiscountCurveStochasticInterface.class.isInstance(curve))
+			discountCurve = (DiscountCurveStochasticInterface)curve;
 
 		return discountCurve;
 	}
 
 	@Override
-	public ForwardCurveInterface getForwardCurve(String forwardCurveName) {
-		ForwardCurveInterface forwardCurve = null;
-		CurveInterface curve = getCurve(forwardCurveName);
-		if(ForwardCurveInterface.class.isInstance(curve))
-			forwardCurve = (ForwardCurveInterface)curve;
+	public ForwardCurveStochasticInterface getForwardCurve(String forwardCurveName) {
+		ForwardCurveStochasticInterface forwardCurve = null;
+		CurveStochasticInterface curve = getCurve(forwardCurveName);
+		if(ForwardCurveStochasticInterface.class.isInstance(curve))
+			forwardCurve = (ForwardCurveStochasticInterface)curve;
 
 		return forwardCurve;
 	}

@@ -9,10 +9,10 @@ import net.finmath.marketdata.model.stochastic.AnalyticModelStochastic;
 import net.finmath.marketdata.model.stochastic.AnalyticModelStochasticInterface;
 import net.finmath.montecarlo.RandomVariable;
 import net.finmath.stochastic.RandomVariableInterface;
-import net.finmath.marketdata.model.curves.stochastic.CurveInterface;
+import net.finmath.marketdata.model.curves.stochastic.CurveStochasticInterface;
 import net.finmath.marketdata.model.curves.stochastic.DiscountCurveFromForwardCurveStochastic;
-import net.finmath.marketdata.model.curves.stochastic.DiscountCurveInterface;
-import net.finmath.marketdata.model.curves.stochastic.ForwardCurveInterface;
+import net.finmath.marketdata.model.curves.stochastic.DiscountCurveStochasticInterface;
+import net.finmath.marketdata.model.curves.stochastic.ForwardCurveStochasticInterface;
 import net.finmath.marketdata.model.curves.stochastic.ForwardCurveStochastic;
 import net.finmath.time.RegularSchedule;
 import net.finmath.time.ScheduleInterface;
@@ -122,27 +122,27 @@ public class SwapStochastic extends AbstractAnalyticProductStochastic implements
 		return valueReceiverLeg.sub(valuePayerLeg);
 	}
 
-	static public RandomVariableInterface getForwardSwapRate(TimeDiscretizationInterface fixTenor, TimeDiscretizationInterface floatTenor, ForwardCurveInterface forwardCurve) {
+	static public RandomVariableInterface getForwardSwapRate(TimeDiscretizationInterface fixTenor, TimeDiscretizationInterface floatTenor, ForwardCurveStochasticInterface forwardCurve) {
 		return getForwardSwapRate(new RegularSchedule(fixTenor), new RegularSchedule(floatTenor), forwardCurve);
 	}
 
-	static public RandomVariableInterface getForwardSwapRate(TimeDiscretizationInterface fixTenor, TimeDiscretizationInterface floatTenor, ForwardCurveInterface forwardCurve, DiscountCurveInterface discountCurve) {
+	static public RandomVariableInterface getForwardSwapRate(TimeDiscretizationInterface fixTenor, TimeDiscretizationInterface floatTenor, ForwardCurveStochasticInterface forwardCurve, DiscountCurveStochasticInterface discountCurve) {
 		AnalyticModelStochastic model = null;
 		if(discountCurve != null) {
-			model			= new AnalyticModelStochastic(new CurveInterface[] { forwardCurve, discountCurve });
+			model			= new AnalyticModelStochastic(new CurveStochasticInterface[] { forwardCurve, discountCurve });
 		}
 		return getForwardSwapRate(new RegularSchedule(fixTenor), new RegularSchedule(floatTenor), forwardCurve, model);
 	}
 
-	static public RandomVariableInterface getForwardSwapRate(ScheduleInterface fixSchedule, ScheduleInterface floatSchedule, ForwardCurveInterface forwardCurve) {
+	static public RandomVariableInterface getForwardSwapRate(ScheduleInterface fixSchedule, ScheduleInterface floatSchedule, ForwardCurveStochasticInterface forwardCurve) {
 		return getForwardSwapRate(fixSchedule, floatSchedule, forwardCurve, null);
 	}
 
-	static public RandomVariableInterface getForwardSwapRate(ScheduleInterface fixSchedule, ScheduleInterface floatSchedule, ForwardCurveInterface forwardCurve, AnalyticModelStochasticInterface model) {
-		DiscountCurveInterface discountCurve = model == null ? null : model.getDiscountCurve(forwardCurve.getDiscountCurveName());
+	static public RandomVariableInterface getForwardSwapRate(ScheduleInterface fixSchedule, ScheduleInterface floatSchedule, ForwardCurveStochasticInterface forwardCurve, AnalyticModelStochasticInterface model) {
+		DiscountCurveStochasticInterface discountCurve = model == null ? null : model.getDiscountCurve(forwardCurve.getDiscountCurveName());
 		if(discountCurve == null) {
 			discountCurve	= new DiscountCurveFromForwardCurveStochastic(forwardCurve.getName());
-			model			= new AnalyticModelStochastic(new CurveInterface[] { forwardCurve, discountCurve });
+			model			= new AnalyticModelStochastic(new CurveStochasticInterface[] { forwardCurve, discountCurve });
 		}
 
 		double evaluationTime = fixSchedule.getFixing(0);	// Consider all values

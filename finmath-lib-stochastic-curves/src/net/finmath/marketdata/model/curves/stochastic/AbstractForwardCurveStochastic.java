@@ -23,7 +23,7 @@ import net.finmath.time.businessdaycalendar.BusinessdayCalendarInterface;
  * 
  * @author Christian Fries
  */
-public abstract class AbstractForwardCurve extends CurveStochastic implements ForwardCurveInterface {
+public abstract class AbstractForwardCurveStochastic extends CurveStochastic implements ForwardCurveStochasticInterface {
 
 	private static final long serialVersionUID = 3735595267579329042L;
 
@@ -49,7 +49,7 @@ public abstract class AbstractForwardCurve extends CurveStochastic implements Fo
 	 * @param interpolationEntity The entity interpolated/extrapolated.
 	 * @param discountCurveName The name of the discount curve associated with this forward curve (e.g. OIS for collateralized forwards).
 	 */
-	public AbstractForwardCurve(String name, 
+	public AbstractForwardCurveStochastic(String name, 
 			                    LocalDate referenceDate, 
 			                    String paymentOffsetCode, 
 			                    BusinessdayCalendarInterface paymentBusinessdayCalendar, 
@@ -80,7 +80,7 @@ public abstract class AbstractForwardCurve extends CurveStochastic implements Fo
 	 * @param paymentDateRollConvention The date roll convention used for adjusting the payment date.
 	 * @param discountCurveName The name of the discount curve associated with this forward curve (e.g. OIS for collateralized forwards).
 	 */
-	public AbstractForwardCurve(String name, 
+	public AbstractForwardCurveStochastic(String name, 
 			                    LocalDate referenceDate, 
 			                    String paymentOffsetCode, 
 			                    BusinessdayCalendarInterface paymentBusinessdayCalendar, 
@@ -98,7 +98,7 @@ public abstract class AbstractForwardCurve extends CurveStochastic implements Fo
 	 * @param paymentOffset The maturity of the index modeled by this curve.
 	 * @param discountCurveName The name of the discount curve associated with this forward curve (e.g. OIS for collateralized forwards).
 	 */
-	public AbstractForwardCurve(String name, LocalDate referenceDate, double paymentOffset, String discountCurveName, AbstractRandomVariableFactory factory) {
+	public AbstractForwardCurveStochastic(String name, LocalDate referenceDate, double paymentOffset, String discountCurveName, AbstractRandomVariableFactory factory) {
 		super(name, referenceDate, InterpolationMethod.LINEAR, ExtrapolationMethod.CONSTANT, InterpolationEntity.VALUE, factory);
 		this.paymentOffset = paymentOffset;
 		this.discountCurveName = discountCurveName;

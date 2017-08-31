@@ -22,7 +22,7 @@ import net.finmath.stochastic.RandomVariableInterface;
  * 
  * <p>
  * <i>Note that a special interpolation is performed for in-between points.
- * Hence, creating a {@link ForwardCurveFromDiscountCurve} and from it
+ * Hence, creating a {@link ForwardCurveFromDiscountCurveStochastic} and from it
  * a DiscountCurveFromForwardCurve will not recover the original curve
  * since interpolation points may be lost.
  * </i>
@@ -30,12 +30,12 @@ import net.finmath.stochastic.RandomVariableInterface;
  * 
  * @author Christian Fries
  */
-public class DiscountCurveFromForwardCurveStochastic extends AbstractCurve implements Serializable, DiscountCurveInterface {
+public class DiscountCurveFromForwardCurveStochastic extends AbstractCurveStochastic implements Serializable, DiscountCurveStochasticInterface {
 
 	private static final long serialVersionUID = -4126228588123963885L;
 
 	private String					forwardCurveName;
-	private ForwardCurveInterface	forwardCurve;
+	private ForwardCurveStochasticInterface	forwardCurve;
 
 	private final double			timeScaling;
 	
@@ -68,7 +68,7 @@ public class DiscountCurveFromForwardCurveStochastic extends AbstractCurve imple
 	 * @param forwardCurve The forward curve used for calculation of the discount factors.
 	 * @param periodLengthTimeScaling A scaling factor applied to d, adjusting for the internal double time to the period length daycount fraction (note that this may only be an approximate solution to capture daycount effects).
 	 */
-	public DiscountCurveFromForwardCurveStochastic(ForwardCurveInterface forwardCurve, double periodLengthTimeScaling) {
+	public DiscountCurveFromForwardCurveStochastic(ForwardCurveStochasticInterface forwardCurve, double periodLengthTimeScaling) {
 		super("DiscountCurveFromForwardCurve" + forwardCurve.getName() + ")", null);
 
 		this.forwardCurve	= forwardCurve;
@@ -99,7 +99,7 @@ public class DiscountCurveFromForwardCurveStochastic extends AbstractCurve imple
 	 * 
 	 * @param forwardCurve The forward curve used for calculation of the discount factors.
 	 */
-	public DiscountCurveFromForwardCurveStochastic(ForwardCurveInterface forwardCurve) {
+	public DiscountCurveFromForwardCurveStochastic(ForwardCurveStochasticInterface forwardCurve) {
 		this(forwardCurve, 1.0);
 	}
 
@@ -116,7 +116,7 @@ public class DiscountCurveFromForwardCurveStochastic extends AbstractCurve imple
 	 */
 	@Override
 	public RandomVariableInterface getDiscountFactor(AnalyticModelStochasticInterface model, double maturity) {
-		ForwardCurveInterface	forwardCurve;
+		ForwardCurveStochasticInterface	forwardCurve;
 		if(this.forwardCurve != null)	forwardCurve = this.forwardCurve;
 		else							forwardCurve = model.getForwardCurve(forwardCurveName);
 
@@ -146,7 +146,7 @@ public class DiscountCurveFromForwardCurveStochastic extends AbstractCurve imple
 
 
 	@Override
-	public CurveBuilderInterface getCloneBuilder() throws CloneNotSupportedException {
+	public CurveStochasticBuilderInterface getCloneBuilder() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 	}
 
