@@ -7,6 +7,7 @@ package net.finmath.marketdata.products.stochastic;
 
 import net.finmath.marketdata.model.stochastic.AnalyticModelStochastic;
 import net.finmath.marketdata.model.stochastic.AnalyticModelStochasticInterface;
+import net.finmath.montecarlo.AbstractRandomVariableFactory;
 import net.finmath.montecarlo.RandomVariable;
 import net.finmath.stochastic.RandomVariableInterface;
 import net.finmath.marketdata.model.curves.stochastic.CurveStochasticInterface;
@@ -141,7 +142,7 @@ public class SwapStochastic extends AbstractAnalyticProductStochastic implements
 	static public RandomVariableInterface getForwardSwapRate(ScheduleInterface fixSchedule, ScheduleInterface floatSchedule, ForwardCurveStochasticInterface forwardCurve, AnalyticModelStochasticInterface model) {
 		DiscountCurveStochasticInterface discountCurve = model == null ? null : model.getDiscountCurve(forwardCurve.getDiscountCurveName());
 		if(discountCurve == null) {
-			discountCurve	= new DiscountCurveFromForwardCurveStochastic(forwardCurve.getName());
+			discountCurve	= new DiscountCurveFromForwardCurveStochastic(forwardCurve.getName(), forwardCurve.getRandomVariableFactory());
 			model			= new AnalyticModelStochastic(new CurveStochasticInterface[] { forwardCurve, discountCurve });
 		}
 

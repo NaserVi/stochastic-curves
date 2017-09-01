@@ -7,6 +7,7 @@ package net.finmath.marketdata.products.stochastic;
 
 import net.finmath.marketdata.model.stochastic.AnalyticModelStochastic;
 import net.finmath.marketdata.model.stochastic.AnalyticModelStochasticInterface;
+import net.finmath.montecarlo.RandomVariable;
 import net.finmath.stochastic.RandomVariableInterface;
 import net.finmath.marketdata.model.curves.stochastic.CurveStochasticInterface;
 import net.finmath.marketdata.model.curves.stochastic.DiscountCurveStochastic;
@@ -75,7 +76,7 @@ public class SwapAnnuityStochastic extends AbstractAnalyticProductStochastic imp
 	/**
 	 * Function to calculate an (idealized) swap annuity for a given schedule and discount curve.
 	 * 
-	 * Note: This method will consider evaluationTime being 0, see {@link net.finmath.marketdata.products.SwapAnnuity#getSwapAnnuity(double, ScheduleInterface, DiscountCurveStochasticInterface, AnalyticModelStochasticInterface)}.
+	 * Note: This method will consider evaluationTime being 0, see {@link net.finmath.marketdata.products.SwapAnnuity#getSwapAnnuity(double, ScheduleInterface, DiscountCurveInterface, AnalyticModelStochasticInterface)}.
 	 * 
 	 * @param schedule The schedule discretization, i.e., the period start and end dates. End dates are considered payment dates and start of the next period.
 	 * @param discountCurve The discount curve.
@@ -91,14 +92,14 @@ public class SwapAnnuityStochastic extends AbstractAnalyticProductStochastic imp
 	 * The discount curve used to calculate the annuity is calculated from the forward curve using classical
 	 * single curve interpretations of forwards and a default period length. The may be a crude approximation.
 	 * 
-	 * Note: This method will consider evaluationTime being 0, see {@link net.finmath.marketdata.products.SwapAnnuity#getSwapAnnuity(double, ScheduleInterface, DiscountCurveStochasticInterface, AnalyticModelStochasticInterface)}.
+	 * Note: This method will consider evaluationTime being 0, see {@link net.finmath.marketdata.products.SwapAnnuity#getSwapAnnuity(double, ScheduleInterface, DiscountCurveInterface, AnalyticModelStochasticInterface)}.
 	 * 
 	 * @param schedule The schedule discretization, i.e., the period start and end dates. End dates are considered payment dates and start of the next period.
 	 * @param forwardCurve The forward curve.
 	 * @return The swap annuity.
 	 */
 	static public RandomVariableInterface getSwapAnnuity(ScheduleInterface schedule, ForwardCurveStochasticInterface forwardCurve) {
-		DiscountCurveStochasticInterface discountCurve = new DiscountCurveFromForwardCurveStochastic(forwardCurve.getName());
+		DiscountCurveStochasticInterface discountCurve = new DiscountCurveFromForwardCurveStochastic(forwardCurve.getName(), forwardCurve.getRandomVariableFactory());
 		double evaluationTime = 0.0;	// Consider only payment time > 0
 		return getSwapAnnuity(evaluationTime, schedule, discountCurve, new AnalyticModelStochastic( new CurveStochasticInterface[] {forwardCurve, discountCurve} ));
 	}
@@ -116,7 +117,7 @@ public class SwapAnnuityStochastic extends AbstractAnalyticProductStochastic imp
 	 * @return The swap annuity.
 	 */
 	static public RandomVariableInterface getSwapAnnuity(double evaluationTime, ScheduleInterface schedule, DiscountCurveStochasticInterface discountCurve, AnalyticModelStochasticInterface model) {
-		RandomVariableInterface value = ((DiscountCurveStochastic)discountCurve).getRandomVariableFactory().createRandomVariable(0.0);
+		RandomVariableInterface value = discountCurve.getRandomVariableFactory().createRandomVariable(0.0);
 		for(int periodIndex=0; periodIndex<schedule.getNumberOfPeriods(); periodIndex++) {
 			double paymentDate		= schedule.getPayment(periodIndex);
 			if(paymentDate <= evaluationTime) continue;
@@ -134,3 +135,4 @@ public class SwapAnnuityStochastic extends AbstractAnalyticProductStochastic imp
 				+ discountCurveName + "]";
 	}
 }
+
