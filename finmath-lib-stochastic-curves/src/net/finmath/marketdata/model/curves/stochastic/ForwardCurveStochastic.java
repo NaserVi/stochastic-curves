@@ -114,7 +114,6 @@ public class ForwardCurveStochastic extends AbstractForwardCurveStochastic imple
 	 * @param discountCurveName The name of a discount curve associated with this index (associated with it's funding or collateralization), if any.
 	 */
 	public ForwardCurveStochastic(String name, double paymentOffset, InterpolationEntityForward interpolationEntityForward, String discountCurveName, AbstractRandomVariableFactory factory) {
-		// What is the use case of this constructor? Can it be deleted?
 		super(name, null, paymentOffset, discountCurveName, factory);
 		this.interpolationEntityForward	= interpolationEntityForward;
 	}
@@ -407,6 +406,7 @@ public class ForwardCurveStochastic extends AbstractForwardCurveStochastic imple
 		return "ForwardCurve [" + super.toString() + ", interpolationEntityForward=" + interpolationEntityForward + "]";
 	}
 	
+	@Override
 	public AbstractRandomVariableFactory getRandomVariableFactory(){
 		return super.getRandomVariableFactory();
 	}

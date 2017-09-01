@@ -8,6 +8,7 @@ package net.finmath.marketdata.model.curves.stochastic;
 import java.time.LocalDate;
 
 import net.finmath.marketdata.model.stochastic.AnalyticModelStochasticInterface;
+import net.finmath.montecarlo.AbstractRandomVariableFactory;
 import net.finmath.montecarlo.interestrate.LIBORModelMonteCarloSimulationInterface;
 import net.finmath.stochastic.RandomVariableInterface;
 
@@ -41,8 +42,13 @@ public interface CurveStochasticInterface extends  Cloneable {
 	 * @param time Time for which the value should be returned.
 	 * @return The value at the give time.
 	 */
-	//double getValue(double time);
 	RandomVariableInterface getValue(double time);
+	
+	/**
+	 * Returns the random variable factory
+	 * @return The random variable factory
+	 */
+	AbstractRandomVariableFactory getRandomVariableFactory();
 
 	/**
 	 * Returns the value for the time using the interpolation method associated with this curve
@@ -55,7 +61,7 @@ public interface CurveStochasticInterface extends  Cloneable {
 	 * 
 	 * @return The value at the give time.
 	 */
-	//double getValue(AnalyticModelInterface model, double time);
+	
      RandomVariableInterface getValue(AnalyticModelStochasticInterface model, double time);
 	/**
 	 * Create a deep copied clone.

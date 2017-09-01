@@ -16,11 +16,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.finmath.marketdata.interpolation.stochastic.RationalFunctionInterpolationRV;
+import net.finmath.marketdata.interpolation.stochastic.*;
 import net.finmath.marketdata.model.stochastic.AnalyticModelStochasticInterface;
 import net.finmath.montecarlo.AbstractRandomVariableFactory;
-import net.finmath.montecarlo.interestrate.LIBORMarketModel;
-import net.finmath.montecarlo.interestrate.LIBORModelMonteCarloSimulationInterface;
 import net.finmath.stochastic.RandomVariableInterface;
 import net.finmath.time.FloatingpointDate;
 
@@ -154,7 +152,7 @@ public class CurveStochastic extends AbstractCurveStochastic implements Serializ
 		 * Build a curve.
 		 */
 		public CurveBuilder() {
-			curve = new CurveStochastic(null, null);
+			curve = new CurveStochastic(null, null, null);
 		}
 
 		/**
@@ -163,8 +161,8 @@ public class CurveStochastic extends AbstractCurveStochastic implements Serializ
 		 * @param name The name of this curve.
 		 * @param referenceDate The reference date for this curve, i.e., the date which defined t=0.
 		 */
-		public CurveBuilder(String name, LocalDate referenceDate) {
-			curve = new CurveStochastic(name, referenceDate);
+		public CurveBuilder(String name, LocalDate referenceDate, AbstractRandomVariableFactory randomVariableFactory) {
+			curve = new CurveStochastic(name, referenceDate, randomVariableFactory);
 		}
 
 		/**
@@ -236,10 +234,11 @@ public class CurveStochastic extends AbstractCurveStochastic implements Serializ
 	private ExtrapolationMethod	extrapolationMethod = ExtrapolationMethod.CONSTANT;
 	private InterpolationEntity interpolationEntity = InterpolationEntity.LOG_OF_VALUE;
 
-	private RationalFunctionInterpolationRV	rationalFunctionInterpolation =  null;
-	private final Object					rationalFunctionInterpolationLazyInitLock = new Object();
+	private RationalFunctionInterpolationStochastic	rationalFunctionInterpolation =  null;
+	private final Object					        rationalFunctionInterpolationLazyInitLock = new Object();
 	private SoftReference<Map<Double, RandomVariableInterface>> curveCacheReference = null;
-	private AbstractRandomVariableFactory randomVariableFactory;
+	//private LIBORModelMonteCarloSimulationInterface model;
+	//private AbstractRandomVariableFactory randomVariableFactory;
 
 	private static final long serialVersionUID = -4126228588123963885L;
 	static NumberFormat	formatterReal = NumberFormat.getInstance(Locale.US);
@@ -264,11 +263,10 @@ public class CurveStochastic extends AbstractCurveStochastic implements Serializ
 			     double[] times, 
 			     RandomVariableInterface[] values,
 			     AbstractRandomVariableFactory randomVariableFactory) {
-		super(name, referenceDate);
+		super(name, referenceDate, randomVariableFactory);
 		this.interpolationMethod	= interpolationMethod;
 		this.extrapolationMethod	= extrapolationMethod;
 		this.interpolationEntity	= interpolationEntity;
-		this.randomVariableFactory  = randomVariableFactory;
 		if(times.length != values.length) throw new IllegalArgumentException("Length of times not equal to length of values.");
 		for(int i=0; i<times.length; i++) this.addPoint(times[i], values[i], false);
 	}
@@ -290,12 +288,11 @@ public class CurveStochastic extends AbstractCurveStochastic implements Serializ
 			        InterpolationEntity interpolationEntity,
 			        AbstractRandomVariableFactory randomVariableFactory) {
 		
-		super(name, referenceDate);
+		super(name, referenceDate, randomVariableFactory);
 		this.interpolationMethod	= interpolationMethod;
 		this.extrapolationMethod	= extrapolationMethod;
 		this.interpolationEntity	= interpolationEntity;
-		this.randomVariableFactory  = randomVariableFactory;
-		
+
 	}
 
 	/**
@@ -304,8 +301,8 @@ public class CurveStochastic extends AbstractCurveStochastic implements Serializ
 	 * @param name The name of this curve.
 	 * @param referenceDate The reference date for this curve, i.e., the date which defined t=0.
 	 */
-	private CurveStochastic(String name, LocalDate referenceDate) {
-		super(name, referenceDate);
+	private CurveStochastic(String name, LocalDate referenceDate, AbstractRandomVariableFactory randomVariableFactory) {
+		super(name, referenceDate, randomVariableFactory);
 	}
 	
 
@@ -342,13 +339,13 @@ public class CurveStochastic extends AbstractCurveStochastic implements Serializ
 					pointsArray[i] = points.get(i).time;
 					valuesArray[i] = points.get(i).value;
 				}
-				rationalFunctionInterpolation = new RationalFunctionInterpolationRV(
+				rationalFunctionInterpolation = new RationalFunctionInterpolationStochastic(
 						pointsArray,
 						valuesArray,
-						RationalFunctionInterpolationRV.InterpolationMethod.valueOf(this.interpolationMethod.toString()),
-						RationalFunctionInterpolationRV.ExtrapolationMethod.valueOf(this.extrapolationMethod.toString()),
+						RationalFunctionInterpolationStochastic.InterpolationMethod.valueOf(this.interpolationMethod.toString()),
+						RationalFunctionInterpolationStochastic.ExtrapolationMethod.valueOf(this.extrapolationMethod.toString()),
 						//((LIBORMarketModel)(model.getModel())).getRandomVariableFactory()
-						randomVariableFactory
+					    getRandomVariableFactory()
 						);
 			}
 		}
@@ -426,13 +423,13 @@ public class CurveStochastic extends AbstractCurveStochastic implements Serializ
 	}
 
 	protected int getTimeIndex(double time) {
-		Point point = new Point(time, randomVariableFactory.createRandomVariable(Double.NaN), false);
+		Point point = new Point(time, getRandomVariableFactory().createRandomVariable(Double.NaN), false);
 		int index =  java.util.Collections.binarySearch(points, point);
 		return index;
 	}
 
 	protected int getParameterIndex(double time) {
-		Point point = new Point(time, randomVariableFactory.createRandomVariable(Double.NaN), false);
+		Point point = new Point(time, getRandomVariableFactory().createRandomVariable(Double.NaN), false);
 		return java.util.Collections.binarySearch(pointsBeingParameters, point);
 	}
 
@@ -534,7 +531,4 @@ public class CurveStochastic extends AbstractCurveStochastic implements Serializ
 				+ ", toString()=" + super.toString() + ",\n" + curveTableString + "]";
 	}
 	
-	public AbstractRandomVariableFactory getRandomVariableFactory(){
-		return randomVariableFactory;
-	}
 }

@@ -34,7 +34,7 @@ import net.finmath.stochastic.RandomVariableInterface;
  * @author Christian Fries
  * @version 1.3
  */
-public class RationalFunctionInterpolationRV  {
+public class RationalFunctionInterpolationStochastic  {
 
 	public enum InterpolationMethod {
 		/** Constant interpolation. Synonym of PIECEWISE_CONSTANT_LEFTPOINT. **/
@@ -141,7 +141,7 @@ public class RationalFunctionInterpolationRV  {
 	 * @param points The array of the x<sub>i</sub> sample points of a function y=f(x).
 	 * @param values The corresponding array of the y<sub>i</sub> sample values to the sample points x<sub>i</sub>.
 	 */
-	public RationalFunctionInterpolationRV(double[] points, RandomVariableInterface[] values, AbstractRandomVariableFactory randomVariableFactory) {
+	public RationalFunctionInterpolationStochastic(double[] points, RandomVariableInterface[] values, AbstractRandomVariableFactory randomVariableFactory) {
 		super();
 		this.points = points;
 		this.values = values;
@@ -157,7 +157,7 @@ public class RationalFunctionInterpolationRV  {
 	 * @param interpolationMethod The interpolation method to be used.
 	 * @param extrapolationMethod The extrapolation method to be used.
 	 */
-	public RationalFunctionInterpolationRV(double[] points, RandomVariableInterface[] values,  InterpolationMethod interpolationMethod, ExtrapolationMethod extrapolationMethod, AbstractRandomVariableFactory randomVariableFactory) {
+	public RationalFunctionInterpolationStochastic(double[] points, RandomVariableInterface[] values,  InterpolationMethod interpolationMethod, ExtrapolationMethod extrapolationMethod, AbstractRandomVariableFactory randomVariableFactory) {
 		super();
 		this.points = points;
 		this.values = values;

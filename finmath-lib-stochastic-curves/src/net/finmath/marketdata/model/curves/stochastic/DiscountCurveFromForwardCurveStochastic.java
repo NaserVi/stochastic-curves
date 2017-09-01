@@ -1,5 +1,4 @@
-/*
- * (c) Copyright Christian P. Fries, Germany. All rights reserved. Contact: email@christian-fries.de.
+/* (c) Copyright Christian P. Fries, Germany. All rights reserved. Contact: email@christian-fries.de.
  *
  * Created on 20.05.2005
  */
@@ -8,6 +7,7 @@ package net.finmath.marketdata.model.curves.stochastic;
 import java.io.Serializable;
 
 import net.finmath.marketdata.model.stochastic.AnalyticModelStochasticInterface;
+import net.finmath.montecarlo.AbstractRandomVariableFactory;
 import net.finmath.stochastic.RandomVariableInterface;
 
 /**
@@ -22,7 +22,7 @@ import net.finmath.stochastic.RandomVariableInterface;
  * 
  * <p>
  * <i>Note that a special interpolation is performed for in-between points.
- * Hence, creating a {@link ForwardCurveFromDiscountCurveStochastic} and from it
+ * Hence, creating a {@link ForwardCurveFromDiscountCurve} and from it
  * a DiscountCurveFromForwardCurve will not recover the original curve
  * since interpolation points may be lost.
  * </i>
@@ -34,7 +34,7 @@ public class DiscountCurveFromForwardCurveStochastic extends AbstractCurveStocha
 
 	private static final long serialVersionUID = -4126228588123963885L;
 
-	private String					forwardCurveName;
+	private String					        forwardCurveName;
 	private ForwardCurveStochasticInterface	forwardCurve;
 
 	private final double			timeScaling;
@@ -50,8 +50,8 @@ public class DiscountCurveFromForwardCurveStochastic extends AbstractCurveStocha
 	 * @param forwardCurveName The name of the forward curve used for calculation of the discount factors.
 	 * @param periodLengthTimeScaling A scaling factor applied to d, adjusting for the internal double time to the period length daycount fraction (note that this may only be an approximate solution to capture daycount effects).
 	 */
-	public DiscountCurveFromForwardCurveStochastic(String forwardCurveName, double periodLengthTimeScaling) {
-		super("DiscountCurveFromForwardCurve(" + forwardCurveName + ")", null);
+	public DiscountCurveFromForwardCurveStochastic(String forwardCurveName, double periodLengthTimeScaling, AbstractRandomVariableFactory randomVariableFactory) {
+		super("DiscountCurveFromForwardCurve(" + forwardCurveName + ")", null, randomVariableFactory);
 
 		this.forwardCurveName	= forwardCurveName;
 		this.timeScaling		= periodLengthTimeScaling;
@@ -68,8 +68,8 @@ public class DiscountCurveFromForwardCurveStochastic extends AbstractCurveStocha
 	 * @param forwardCurve The forward curve used for calculation of the discount factors.
 	 * @param periodLengthTimeScaling A scaling factor applied to d, adjusting for the internal double time to the period length daycount fraction (note that this may only be an approximate solution to capture daycount effects).
 	 */
-	public DiscountCurveFromForwardCurveStochastic(ForwardCurveStochasticInterface forwardCurve, double periodLengthTimeScaling) {
-		super("DiscountCurveFromForwardCurve" + forwardCurve.getName() + ")", null);
+	public DiscountCurveFromForwardCurveStochastic(ForwardCurveStochasticInterface forwardCurve, double periodLengthTimeScaling, AbstractRandomVariableFactory randomVariableFactory) {
+		super("DiscountCurveFromForwardCurve" + forwardCurve.getName() + ")", null, randomVariableFactory);
 
 		this.forwardCurve	= forwardCurve;
 		this.timeScaling	= periodLengthTimeScaling;
@@ -85,8 +85,8 @@ public class DiscountCurveFromForwardCurveStochastic extends AbstractCurveStocha
 	 * 
 	 * @param forwardCurveName The name of the forward curve used for calculation of the discount factors.
 	 */
-	public DiscountCurveFromForwardCurveStochastic(String forwardCurveName) {
-		this(forwardCurveName, 1.0);
+	public DiscountCurveFromForwardCurveStochastic(String forwardCurveName, AbstractRandomVariableFactory randomVariableFactory) {
+		this(forwardCurveName, 1.0, randomVariableFactory);
 	}
 
 	/**
@@ -99,8 +99,8 @@ public class DiscountCurveFromForwardCurveStochastic extends AbstractCurveStocha
 	 * 
 	 * @param forwardCurve The forward curve used for calculation of the discount factors.
 	 */
-	public DiscountCurveFromForwardCurveStochastic(ForwardCurveStochasticInterface forwardCurve) {
-		this(forwardCurve, 1.0);
+	public DiscountCurveFromForwardCurveStochastic(ForwardCurveStochasticInterface forwardCurve, AbstractRandomVariableFactory randomVariableFactory) {
+		this(forwardCurve, 1.0, randomVariableFactory);
 	}
 
 	/* (non-Javadoc)
@@ -192,4 +192,5 @@ public class DiscountCurveFromForwardCurveStochastic extends AbstractCurveStocha
 			return false;
 		return true;
 	}
+	
 }

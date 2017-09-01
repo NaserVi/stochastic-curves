@@ -7,6 +7,7 @@ package net.finmath.marketdata.model.curves.stochastic;
 
 import java.time.LocalDate;
 
+import net.finmath.montecarlo.AbstractRandomVariableFactory;
 import net.finmath.stochastic.RandomVariableInterface;
 
 /**
@@ -19,15 +20,17 @@ public abstract class AbstractCurveStochastic implements CurveStochasticInterfac
 
 	private	final	LocalDate	referenceDate;
 	private final	String		name;
+	private final   AbstractRandomVariableFactory randomVariableFactory;
 
 	/**
 	 * @param name The name of this curve.
 	 * @param referenceDate The reference date of this curve.
 	 */
-	public AbstractCurveStochastic(String name, LocalDate referenceDate) {
+	public AbstractCurveStochastic(String name, LocalDate referenceDate, AbstractRandomVariableFactory randomVariableFactory) {
 		super();
 		this.name = name;
 		this.referenceDate = referenceDate;
+		this.randomVariableFactory = randomVariableFactory;
 	}
 
 	/* (non-Javadoc)
@@ -77,5 +80,11 @@ public abstract class AbstractCurveStochastic implements CurveStochasticInterfac
 	@Override
 	public String toString() {
 		return "AbstractCurve [name=" + name + ", referenceDate=" + referenceDate + "]";
+	}
+	
+	
+	@Override
+	public AbstractRandomVariableFactory getRandomVariableFactory(){
+		return randomVariableFactory;
 	}
 }
