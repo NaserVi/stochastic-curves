@@ -54,6 +54,9 @@ public class TestCurvesFromLIBORModel {
 	
 	
 	@Test
+	/*
+	 * We value a forward starting swap with LMM and using curves built from the LMM. The curves' time 0 is the forward starting date of the swap. 
+	 */
     public void testStochasticCurves() throws CalculationException{
 		// Create Random Variable Factory
 		Map<String, Object> properties = new HashMap<String, Object>(); 

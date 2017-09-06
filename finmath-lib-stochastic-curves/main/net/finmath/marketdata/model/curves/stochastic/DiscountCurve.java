@@ -368,9 +368,17 @@ public class DiscountCurve extends Curve implements Serializable, DiscountCurveI
 		return discountFactors;
 	}
 	
-	// INSERTED
+	/**
+	 * Create a discount curve from forwards given by a LIBORMonteCarloModel. If the model uses multiple curves, return its discount curve.
+	 * 
+	 * @param forwardCurveName      name of the forward curve.
+	 * @param model                 Monte Carlo model providing the forwards.
+	 * @param startTime             time at which the curve starts, i.e. zero time for the curve
+	 * @return
+	 * @throws CalculationException
+	 */
 	public static DiscountCurveInterface createDiscountCurveFromMonteCarloLiborModel(String forwardCurveName,  LIBORModelMonteCarloSimulationInterface model, double startTime) throws CalculationException{
-		// Check if the LMM has a discount curve which is not created from a forward curve
+		// Check if the LMM uses a discount curve which is created from a forward curve
 		if(model.getModel().getDiscountCurve()==null || model.getModel().getDiscountCurve().getName().toLowerCase().contains("DiscountCurveFromForwardCurve".toLowerCase())){
 		   return new DiscountCurveFromForwardCurve(ForwardCurve.createForwardCurveFromMonteCarloLiborModel(forwardCurveName, model, startTime));
 		} else {
