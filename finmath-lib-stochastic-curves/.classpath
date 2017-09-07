@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="finmath-lib-current.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Mario/Downloads/eclipse-jee-mars-2-win32-x86_64/eclipse/plugins/org.junit_4.12.0.v201504281640/junit.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Mario/Downloads/eclipse-jee-mars-2-win32-x86_64/eclipse/plugins/org.hamcrest.core_1.3.0.v201303031735.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/finmath lib"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

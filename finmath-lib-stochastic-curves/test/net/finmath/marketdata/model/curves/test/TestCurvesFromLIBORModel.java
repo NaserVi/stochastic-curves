@@ -64,7 +64,7 @@ public class TestCurvesFromLIBORModel {
 		AbstractRandomVariableFactory randomVariableFactory = new RandomVariableDifferentiableAADFactory(new RandomVariableFactory(), properties);
 
 		int maturityInYears = 5;
-		int forwardStartTimeInYears = 3;
+		int forwardStartTimeInYears = 0;
 		// Create Analytic Swap
 		AbstractAnalyticProduct swapAnalytic = createSwapAnalytic(maturityInYears,forwardStartTimeInYears,randomVariableFactory);
 		// Create Monte Carlo Swap
@@ -84,12 +84,8 @@ public class TestCurvesFromLIBORModel {
 		int firstLiborIndex = liborMarketModel.getLiborPeriodDiscretization().getTimeIndexNearestGreaterOrEqual(evaluationTime);
 		double firstLiborTime = liborMarketModel.getLiborPeriodDiscretization().getTime(firstLiborIndex);
 		if(firstLiborTime>evaluationTime) liborsAtTimeIndex.add(liborMarketModel.getLIBOR(evaluationTime, evaluationTime, firstLiborTime));
-		double[] times = new double[firstLiborTime==evaluationTime ? (liborMarketModel.getNumberOfLibors()-firstLiborIndex) : (liborMarketModel.getNumberOfLibors()-firstLiborIndex+1)];
-		times[0]=0;
-		int indexOffset = liborMarketModel.getLiborPeriodDiscretization().getTime(firstLiborIndex)==evaluationTime ? 0 : 1;
 		for(int i=firstLiborIndex;i<liborMarketModel.getNumberOfLibors();i++) {
 					    liborsAtTimeIndex.add(liborMarketModel.getLIBOR(timeIndex,i));
-					    times[i-firstLiborIndex+indexOffset]=liborMarketModel.getLiborPeriodDiscretization().getTime(i)-evaluationTime;
 		}
 		//times[times.length-1]= model.getLiborPeriodDiscretization().getTime(model.getNumberOfLibors())-evaluationTime;
 		RandomVariableInterface[] libors = liborsAtTimeIndex.toArray(new RandomVariableInterface[liborsAtTimeIndex.size()]);
