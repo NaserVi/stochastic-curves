@@ -1,0 +1,146 @@
+/*
+ * (c) Copyright Christian P. Fries, Germany. All rights reserved. Contact: email@christian-fries.de.
+ *
+ * Created on 28.11.2012
+ */
+package net.finmath.analytic.model;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import net.finmath.analytic.model.curves.CurveInterface;
+import net.finmath.analytic.model.curves.DiscountCurveInterface;
+import net.finmath.analytic.model.curves.ForwardCurveInterface;
+import net.finmath.marketdata.calibration.ParameterObjectInterface;
+
+/**
+ * Implements a collection of market data objects (e.g., discount curves, forward curve)
+ * which provide interpolation of market data or other derived quantities
+ * ("calibrated curves"). This can be seen as a model to be used in analytic pricing
+ * formulas - hence this class is termed <code>AnalyticModel</code>.
+ * 
+ * @author Christian Fries
+ */
+public class AnalyticModel implements AnalyticModelInterface, Cloneable {
+
+	private final Map<String, CurveInterface>				curvesMap				= new HashMap<String, CurveInterface>();
+	//private final Map<String, VolatilitySurfaceInterface>	volatilitySurfaceMap	= new HashMap<String, VolatilitySurfaceInterface>();
+
+	/**
+	 * Create an empty analytic model.
+	 */
+	public AnalyticModel() {
+	}
+
+	/**
+	 * Create an analytic model with the given curves.
+	 * 
+	 * @param curves The vector of curves.
+	 */
+	public AnalyticModel(CurveInterface[] curves) {
+        for (CurveInterface curve : curves) curvesMap.put(curve.getName(), curve);
+	}
+	
+	/**
+	 * Create an analytic model with the given curves.
+	 * 
+	 * @param curves A collection of curves.
+	 */
+	public AnalyticModel(Collection<CurveInterface> curves) {
+		for(CurveInterface curve : curves) curvesMap.put(curve.getName(), curve);
+	}
+
+	/* (non-Javadoc)
+	 * @see net.finmath.marketdata.model.AnalyticModelInterface#getCurve(java.lang.String)
+	 */
+	@Override
+	public CurveInterface getCurve(String name)
+	{
+		return curvesMap.get(name);
+	}
+
+	public AnalyticModelInterface addCurve(String name, CurveInterface curve) {
+		AnalyticModel newModel = clone();
+		newModel.curvesMap.put(name, curve);
+		return newModel;
+	}
+
+	public AnalyticModelInterface addCurve(CurveInterface curve) {
+		AnalyticModel newModel = clone();
+		newModel.curvesMap.put(curve.getName(), curve);
+		return newModel;
+	}
+
+	@Override
+	public AnalyticModelInterface addCurves(CurveInterface... curves) {
+		AnalyticModel newModel = clone();
+		for(CurveInterface curve : curves) newModel.curvesMap.put(curve.getName(), curve);
+		return newModel;
+	}
+
+	@Override
+	public AnalyticModelInterface addCurves(Set<CurveInterface> curves) {
+		AnalyticModel newModel = clone();
+		for(CurveInterface curve : curves) newModel.curvesMap.put(curve.getName(), curve);
+		return newModel;
+	}
+
+	/**
+	 * @deprecated This class will become immutable. Use addCurve instead.
+	 */
+	@Override
+	@Deprecated
+    public void setCurve(CurveInterface curve)
+	{
+		curvesMap.put(curve.getName(), curve);
+	}
+
+	/**
+	 * Set some curves.
+	 * 
+	 * @param curves Array of curves to set.
+	 * @deprecated This class will become immutable. Use addCurve instead.
+	 */
+	@Deprecated
+	public void setCurves(CurveInterface[] curves) {
+		for(CurveInterface curve : curves) setCurve(curve);
+	}
+	
+	@Override
+	public DiscountCurveInterface getDiscountCurve(String discountCurveName) {
+		DiscountCurveInterface discountCurve = null;
+		CurveInterface curve = getCurve(discountCurveName);
+		if(DiscountCurveInterface.class.isInstance(curve))
+			discountCurve = (DiscountCurveInterface)curve;
+
+		return discountCurve;
+	}
+
+	@Override
+	public ForwardCurveInterface getForwardCurve(String forwardCurveName) {
+		ForwardCurveInterface forwardCurve = null;
+		CurveInterface curve = getCurve(forwardCurveName);
+		if(ForwardCurveInterface.class.isInstance(curve))
+			forwardCurve = (ForwardCurveInterface)curve;
+
+		return forwardCurve;
+	}
+
+
+	@Override
+	public AnalyticModel clone()
+	{
+		AnalyticModel newModel = new AnalyticModel();
+		newModel.curvesMap.putAll(curvesMap);
+		return newModel;
+	}
+
+
+	@Override
+	public String toString() {
+		return "AnalyticModel: curves=" + curvesMap.keySet();
+	}
+}
