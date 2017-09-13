@@ -11,10 +11,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import net.finmath.analytic.calibration.ParameterObjectInterface;
 import net.finmath.analytic.model.curves.CurveInterface;
 import net.finmath.analytic.model.curves.DiscountCurveInterface;
 import net.finmath.analytic.model.curves.ForwardCurveInterface;
-import net.finmath.marketdata.calibration.ParameterObjectInterface;
+import net.finmath.analytic.model.volatilities.AbstractVolatilitySurface;
+import net.finmath.analytic.model.volatilities.VolatilitySurfaceInterface;
+import net.finmath.montecarlo.AbstractRandomVariableFactory;
+import net.finmath.montecarlo.RandomVariableFactory;
+import net.finmath.stochastic.RandomVariableInterface;
 
 /**
  * Implements a collection of market data objects (e.g., discount curves, forward curve)
@@ -26,36 +31,58 @@ import net.finmath.marketdata.calibration.ParameterObjectInterface;
  */
 public class AnalyticModel implements AnalyticModelInterface, Cloneable {
 
-	private final Map<String, CurveInterface>				curvesMap				= new HashMap<String, CurveInterface>();
-	//private final Map<String, VolatilitySurfaceInterface>	volatilitySurfaceMap	= new HashMap<String, VolatilitySurfaceInterface>();
+	private final AbstractRandomVariableFactory			randomVariableFactory;
+	private final Map<String, CurveInterface>			curvesMap					= new HashMap<String, CurveInterface>();
+	private final Map<String, VolatilitySurfaceInterface>	volatilitySurfaceMap	= new HashMap<String, VolatilitySurfaceInterface>();
 
 	/**
 	 * Create an empty analytic model.
 	 */
 	public AnalyticModel() {
+		randomVariableFactory = new RandomVariableFactory();
 	}
 
+	/**
+	 * Create an empty analytic model.
+	 */
+	public AnalyticModel(AbstractRandomVariableFactory randomVariableFactory) {
+		this.randomVariableFactory = randomVariableFactory;
+	}
+  
 	/**
 	 * Create an analytic model with the given curves.
 	 * 
 	 * @param curves The vector of curves.
 	 */
 	public AnalyticModel(CurveInterface[] curves) {
+		this();
         for (CurveInterface curve : curves) curvesMap.put(curve.getName(), curve);
 	}
 	
 	/**
 	 * Create an analytic model with the given curves.
 	 * 
+	 * @param curves The vector of curves.
+	 */
+	public AnalyticModel(AbstractRandomVariableFactory randomVariableFactory, CurveInterface[] curves) {
+		this(randomVariableFactory);
+        for (CurveInterface curve : curves) curvesMap.put(curve.getName(), curve);
+	}
+
+	/**
+	 * Create an analytic model with the given curves.
+	 * 
 	 * @param curves A collection of curves.
 	 */
 	public AnalyticModel(Collection<CurveInterface> curves) {
+		this();
 		for(CurveInterface curve : curves) curvesMap.put(curve.getName(), curve);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.finmath.marketdata.model.AnalyticModelInterface#getCurve(java.lang.String)
-	 */
+	public RandomVariableInterface getRandomVariableForConstant(double value) {
+		return randomVariableFactory.createRandomVariable(value);
+	}
+	
 	@Override
 	public CurveInterface getCurve(String name)
 	{
@@ -129,15 +156,69 @@ public class AnalyticModel implements AnalyticModelInterface, Cloneable {
 		return forwardCurve;
 	}
 
+	@Override
+	public VolatilitySurfaceInterface getVolatilitySurface(String name) {
+		return volatilitySurfaceMap.get(name);
+	}
+	
+	public AnalyticModelInterface addVolatilitySurface(VolatilitySurfaceInterface volatilitySurface)
+	{
+		AnalyticModel newModel = clone();
+		newModel.volatilitySurfaceMap.put(volatilitySurface.getName(), volatilitySurface);
+		return newModel;
+	}
+
+	@Override
+	public AnalyticModelInterface addVolatilitySurfaces(VolatilitySurfaceInterface... volatilitySurfaces)
+	{
+		AnalyticModel newModel = clone();
+		for(VolatilitySurfaceInterface volatilitySurface : volatilitySurfaces) newModel.volatilitySurfaceMap.put(volatilitySurface.getName(), volatilitySurface);
+		return newModel;
+	}
+
+	@Override
+	public AnalyticModelInterface addVolatilitySurfaces(Set<AbstractVolatilitySurface> volatilitySurfaces) {
+		AnalyticModel newModel = clone();
+		for(VolatilitySurfaceInterface volatilitySurface : volatilitySurfaces) newModel.volatilitySurfaceMap.put(volatilitySurface.getName(), volatilitySurface);
+		return newModel;
+	}
+
+	private void setVolatilitySurface(VolatilitySurfaceInterface volatilitySurface)
+	{
+		volatilitySurfaceMap.put(volatilitySurface.getName(), volatilitySurface);
+	}
+	
+	private void set(Object marketDataObject) {
+		if(marketDataObject instanceof CurveInterface)					setCurve((CurveInterface)marketDataObject);
+		else if(marketDataObject instanceof VolatilitySurfaceInterface)	setVolatilitySurface((VolatilitySurfaceInterface)marketDataObject);
+		else throw new IllegalArgumentException("Provided object is not of supported type.");
+	}
 
 	@Override
 	public AnalyticModel clone()
 	{
 		AnalyticModel newModel = new AnalyticModel();
 		newModel.curvesMap.putAll(curvesMap);
+		newModel.volatilitySurfaceMap.putAll(volatilitySurfaceMap);
 		return newModel;
 	}
 
+	@Override
+    public AnalyticModelInterface getCloneForParameter(Map<ParameterObjectInterface, RandomVariableInterface[]> curveParameterPairs) throws CloneNotSupportedException {
+
+		// Build the modified clone of this model
+		AnalyticModel modelClone = clone();
+
+		// Add modified clones of curves to model clone
+		if(curveParameterPairs != null) {
+			for(Entry<ParameterObjectInterface, RandomVariableInterface[]> curveParameterPair : curveParameterPairs.entrySet()) {
+				ParameterObjectInterface newCurve = curveParameterPair.getKey().getCloneForParameter(curveParameterPair.getValue());
+				modelClone.set(newCurve);
+			}
+		}
+		
+		return modelClone;
+	}
 
 	@Override
 	public String toString() {

@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 import net.finmath.analytic.model.AnalyticModelInterface;
-import net.finmath.montecarlo.AbstractRandomVariableFactory;
 import net.finmath.stochastic.RandomVariableInterface;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingWeekends;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarInterface;

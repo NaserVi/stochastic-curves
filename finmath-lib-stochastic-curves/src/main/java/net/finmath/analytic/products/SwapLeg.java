@@ -6,10 +6,8 @@
 package net.finmath.analytic.products;
 
 import net.finmath.analytic.model.AnalyticModelInterface;
-import net.finmath.analytic.model.curves.DiscountCurve;
 import net.finmath.analytic.model.curves.DiscountCurveInterface;
 import net.finmath.analytic.model.curves.ForwardCurveInterface;
-import net.finmath.montecarlo.AbstractRandomVariableFactory;
 import net.finmath.stochastic.RandomVariableInterface;
 import net.finmath.time.ScheduleInterface;
 
@@ -30,7 +28,6 @@ public class SwapLeg extends AbstractAnalyticProduct implements AnalyticProductI
 	private final double						spread;
 	private final String						discountCurveName;
 	private boolean								isNotionalExchanged = false;
-	private AbstractRandomVariableFactory       factory;
 
 	/**
 	 * Creates a swap leg. The swap leg has a unit notional of 1.
@@ -41,14 +38,13 @@ public class SwapLeg extends AbstractAnalyticProduct implements AnalyticProductI
 	 * @param discountCurveName Name of the discount curve for the leg.
 	 * @param isNotionalExchanged If true, the leg will pay notional at the beginning of each swap period and receive notional at the end of the swap period. Note that the cash flow date for the notional is periodStart and periodEnd (not fixingDate and paymentDate).
 	 */
-	public SwapLeg(ScheduleInterface legSchedule, String forwardCurveName, double spread, String discountCurveName, boolean isNotionalExchanged, AbstractRandomVariableFactory factory) {
+	public SwapLeg(ScheduleInterface legSchedule, String forwardCurveName, double spread, String discountCurveName, boolean isNotionalExchanged) {
 		super();
 		this.legSchedule = legSchedule;
 		this.forwardCurveName = forwardCurveName;
 		this.spread = spread;
 		this.discountCurveName = discountCurveName;
 		this.isNotionalExchanged = isNotionalExchanged;
-		this.factory = factory;
 	}
 
 	/**
@@ -59,8 +55,8 @@ public class SwapLeg extends AbstractAnalyticProduct implements AnalyticProductI
 	 * @param spread Fixed spread on the forward or fix rate.
 	 * @param discountCurveName Name of the discount curve for the leg.
 	 */
-	public SwapLeg(ScheduleInterface legSchedule, String forwardCurveName, double spread, String discountCurveName, AbstractRandomVariableFactory factory) {
-		this(legSchedule, forwardCurveName, spread, discountCurveName, false, factory);
+	public SwapLeg(ScheduleInterface legSchedule, String forwardCurveName, double spread, String discountCurveName) {
+		this(legSchedule, forwardCurveName, spread, discountCurveName, false);
 	}
 
 
@@ -69,38 +65,44 @@ public class SwapLeg extends AbstractAnalyticProduct implements AnalyticProductI
 		if(model==null) {
 			throw new IllegalArgumentException("model==null");
 		}
-		
+
 		DiscountCurveInterface discountCurve = model.getDiscountCurve(discountCurveName);
 		if(discountCurve == null) {
 			throw new IllegalArgumentException("No discount curve with name '" + discountCurveName + "' was found in the model:\n" + model.toString());
 		}
-		
+
 		ForwardCurveInterface forwardCurve = model.getForwardCurve(forwardCurveName);
 		if(forwardCurve == null && forwardCurveName != null && forwardCurveName.length() > 0) {
 			throw new IllegalArgumentException("No forward curve with name '" + forwardCurveName + "' was found in the model:\n" + model.toString());
 		}
-		
-		RandomVariableInterface value = factory.createRandomVariable(0.0);
+
+		RandomVariableInterface value = model.getRandomVariableForConstant(0.0);
 		for(int periodIndex=0; periodIndex<legSchedule.getNumberOfPeriods(); periodIndex++) {
 			double fixingDate	= legSchedule.getFixing(periodIndex);
 			double paymentDate	= legSchedule.getPayment(periodIndex);
 			double periodLength	= legSchedule.getPeriodLength(periodIndex);
 
-			RandomVariableInterface forward = factory.createRandomVariable(spread);
+			RandomVariableInterface forward = model.getRandomVariableForConstant(spread);
 			if(forwardCurve != null) {
 				forward = forward.add(forwardCurve.getForward(model, fixingDate, paymentDate-fixingDate));
 			}
 
-			RandomVariableInterface discountFactor	= paymentDate > evaluationTime ? discountCurve.getDiscountFactor(model, paymentDate) : factory.createRandomVariable(0.0);;
-			value = value.add(forward.mult(discountFactor).mult(periodLength));
+			if(paymentDate > evaluationTime) {
+				RandomVariableInterface discountFactor	= discountCurve.getDiscountFactor(model, paymentDate);
+				value = value.add(forward.mult(periodLength).mult(discountFactor));
+			}
 
 			// Consider notional payments if required
 			if(isNotionalExchanged) {
 				double periodEnd	= legSchedule.getPeriodEnd(periodIndex);
-				value = periodEnd > evaluationTime ? value.add(discountCurve.getDiscountFactor(model, periodEnd)) : value.add(0.0);
+				if(periodEnd > evaluationTime) {
+					value = value.add(discountCurve.getDiscountFactor(model, periodEnd));
+				}
 
 				double periodStart	= legSchedule.getPeriodStart(periodIndex);
-				value = periodStart > evaluationTime ? value.sub(discountCurve.getDiscountFactor(model, periodStart)) : value.sub(0.0);
+				if(periodStart > evaluationTime) {
+					value = value.sub(discountCurve.getDiscountFactor(model, periodStart));
+				}
 			}
 		}
 

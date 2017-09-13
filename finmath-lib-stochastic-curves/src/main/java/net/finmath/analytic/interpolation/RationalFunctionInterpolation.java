@@ -5,11 +5,6 @@
  */
 package net.finmath.analytic.interpolation;
 
-import java.util.Arrays;
-import java.util.function.DoubleUnaryOperator;
-
-import net.finmath.functions.LinearAlgebra;
-import net.finmath.interpolation.RationalFunctionInterpolation.InterpolationMethod;
 import net.finmath.montecarlo.RandomVariable;
 //import net.finmath.interpolation.RationalFunctionInterpolation.RationalFunction;
 import net.finmath.stochastic.RandomVariableInterface;

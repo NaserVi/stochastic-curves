@@ -8,12 +8,14 @@ package net.finmath.analytic.model;
 import java.util.Map;
 import java.util.Set;
 
+import net.finmath.analytic.calibration.ParameterObjectInterface;
 import net.finmath.analytic.model.curves.CurveInterface;
 import net.finmath.analytic.model.curves.DiscountCurveInterface;
 import net.finmath.analytic.model.curves.ForwardCurveInterface;
-//import net.finmath.marketdata.model.volatilities.AbstractVolatilitySurface;
-//import net.finmath.marketdata.model.volatilities.VolatilitySurfaceInterface;
+import net.finmath.analytic.model.volatilities.AbstractVolatilitySurface;
+import net.finmath.analytic.model.volatilities.VolatilitySurfaceInterface;
 import net.finmath.modelling.ModelInterface;
+import net.finmath.stochastic.RandomVariableInterface;
 
 /**
  * A collection of objects representing analytic valuations, i.e., curves and volatility surfaces.
@@ -22,6 +24,8 @@ import net.finmath.modelling.ModelInterface;
  */
 public interface AnalyticModelInterface extends ModelInterface, Cloneable {
 
+	RandomVariableInterface getRandomVariableForConstant(double value);
+	
 	/**
 	 * Get a curve by a given curve name.
 	 * 
@@ -75,9 +79,9 @@ public interface AnalyticModelInterface extends ModelInterface, Cloneable {
 	 */
 	ForwardCurveInterface getForwardCurve(String forwardCurveName);
 
-	//VolatilitySurfaceInterface getVolatilitySurface(String name);
+	VolatilitySurfaceInterface getVolatilitySurface(String name);
 
-	//AnalyticModelInterface addVolatilitySurfaces(VolatilitySurfaceInterface... volatilitySurfaces);
+	AnalyticModelInterface addVolatilitySurfaces(VolatilitySurfaceInterface... volatilitySurfaces);
 
 	/**
 	 * Create a new analytic model consisting of a clone of this one together with the given volatility surfaces added.
@@ -85,10 +89,10 @@ public interface AnalyticModelInterface extends ModelInterface, Cloneable {
 	 * @param volatilitySurfaces The list of volatility surfaces to add.
 	 * @return A new analytic model.
 	 */
-	//AnalyticModelInterface addVolatilitySurfaces(Set<AbstractVolatilitySurface> volatilitySurfaces);
+	AnalyticModelInterface addVolatilitySurfaces(Set<AbstractVolatilitySurface> volatilitySurfaces);
 
 	
 	AnalyticModelInterface clone();
 
-	//AnalyticModelInterface getCloneForParameter(Map<ParameterObjectInterface, double[]> curvesParameterPairs) throws CloneNotSupportedException;
+	AnalyticModelInterface getCloneForParameter(Map<ParameterObjectInterface, RandomVariableInterface[]> curvesParameterPairs) throws CloneNotSupportedException;
 }

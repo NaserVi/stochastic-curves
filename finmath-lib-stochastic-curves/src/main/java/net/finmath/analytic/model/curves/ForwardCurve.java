@@ -10,14 +10,12 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.stream.DoubleStream;
 
 import net.finmath.analytic.model.AnalyticModelInterface;
 import net.finmath.exception.CalculationException;
-import net.finmath.montecarlo.AbstractRandomVariableFactory;
-import net.finmath.montecarlo.MonteCarloSimulationInterface;
 import net.finmath.montecarlo.RandomVariable;
 import net.finmath.montecarlo.interestrate.LIBORModelMonteCarloSimulationInterface;
-import net.finmath.montecarlo.model.AbstractModel;
 import net.finmath.stochastic.RandomVariableInterface;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingWeekends;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarInterface;
@@ -84,26 +82,6 @@ public class ForwardCurve extends AbstractForwardCurve implements Serializable {
 			super.addPoint(0.0, new RandomVariable(1.0), false);
 		}
 	}
-	
-	public ForwardCurve(String name, 
-            LocalDate referenceDate, 
-            String paymentOffsetCode, 
-            BusinessdayCalendarInterface paymentBusinessdayCalendar, 
-            BusinessdayCalendarInterface.DateRollConvention paymentDateRollConvention, 
-            InterpolationMethod interpolationMethod, 
-            ExtrapolationMethod extrapolationMethod, 
-            InterpolationEntity interpolationEntity, 
-            InterpolationEntityForward interpolationEntityForward, 
-            String discountCurveName,
-            AbstractRandomVariableFactory factory) {
-            super(name, referenceDate, paymentOffsetCode, paymentBusinessdayCalendar, paymentDateRollConvention, interpolationMethod, 
-	        extrapolationMethod, interpolationEntity, discountCurveName);
-            this.interpolationEntityForward	= interpolationEntityForward;
-
-            if(interpolationEntityForward == InterpolationEntityForward.DISCOUNTFACTOR) {
-            super.addPoint(0.0, factory.createRandomVariable(1.0), false);
-}
-}
 
 	/**
 	 * Generate a forward curve using a given discount curve and payment offset.
@@ -321,6 +299,22 @@ public class ForwardCurve extends AbstractForwardCurve implements Serializable {
 		return forwardCurve;
 	}
 	
+	/**
+	 * Create a forward curve from given times and given forwards with respect to an associated discount curve and payment offset.
+	 * 
+	 * @param name The name of this curve.
+	 * @param times A vector of given time points.
+	 * @param givenForwards A vector of given forwards (corresponding to the given time points).
+	 * @param model An analytic model providing a context. The discount curve (if needed) is obtained from this model.
+	 * @param discountCurveName Name of the discount curve associated with this index (associated with it's funding or collateralization).
+	 * @param paymentOffset Time between fixing and payment.
+	 * @return A new ForwardCurve object.
+	 */
+	public static ForwardCurve createForwardCurveFromForwards(String name, double[] times, double[] givenForwards, AnalyticModelInterface model, String discountCurveName, double paymentOffset) {
+		RandomVariableInterface[] givenForwardsAsRandomVariables = DoubleStream.of(givenForwards).mapToObj(x -> { return new RandomVariable(x); }).toArray(RandomVariableInterface[]::new);
+		return createForwardCurveFromForwards(name, times, givenForwardsAsRandomVariables, model, discountCurveName, paymentOffset);
+	}
+
 	/**
 	 * Create a forward curve from forwards given by a LIBORMonteCarloModel.
 	 * 

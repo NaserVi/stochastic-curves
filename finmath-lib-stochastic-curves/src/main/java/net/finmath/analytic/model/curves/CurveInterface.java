@@ -7,9 +7,8 @@ package net.finmath.analytic.model.curves;
 
 import java.time.LocalDate;
 
+import net.finmath.analytic.calibration.ParameterObjectInterface;
 import net.finmath.analytic.model.AnalyticModelInterface;
-import net.finmath.montecarlo.AbstractRandomVariableFactory;
-import net.finmath.montecarlo.interestrate.LIBORModelMonteCarloSimulationInterface;
 import net.finmath.stochastic.RandomVariableInterface;
 
 /**
@@ -17,7 +16,7 @@ import net.finmath.stochastic.RandomVariableInterface;
  * 
  * @author Christian Fries
  */
-public interface CurveInterface extends  Cloneable {
+public interface CurveInterface extends ParameterObjectInterface, Cloneable {
 
 	/**
 	 * Get the name of the curve.
@@ -43,7 +42,6 @@ public interface CurveInterface extends  Cloneable {
 	 * @return The value at the give time.
 	 */
 	RandomVariableInterface getValue(double time);
-	
 
 	/**
 	 * Returns the value for the time using the interpolation method associated with this curve
@@ -56,8 +54,8 @@ public interface CurveInterface extends  Cloneable {
 	 * 
 	 * @return The value at the give time.
 	 */
-	
      RandomVariableInterface getValue(AnalyticModelInterface model, double time);
+
 	/**
 	 * Create a deep copied clone.
 	 * 
@@ -77,6 +75,6 @@ public interface CurveInterface extends  Cloneable {
 	 */
 	CurveBuilderInterface getCloneBuilder() throws CloneNotSupportedException;
 
-	
-    CurveInterface getCloneForParameter(RandomVariableInterface[] value) throws CloneNotSupportedException;
+	@Override
+	CurveInterface getCloneForParameter(RandomVariableInterface[] value) throws CloneNotSupportedException;
 }

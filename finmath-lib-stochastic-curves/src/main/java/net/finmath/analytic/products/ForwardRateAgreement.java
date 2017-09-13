@@ -1,9 +1,7 @@
 package net.finmath.analytic.products;
 
 import net.finmath.analytic.model.AnalyticModelInterface;
-import net.finmath.analytic.model.curves.DiscountCurve;
 import net.finmath.analytic.model.curves.DiscountCurveInterface;
-import net.finmath.analytic.model.curves.ForwardCurve;
 import net.finmath.analytic.model.curves.ForwardCurveInterface;
 import net.finmath.montecarlo.RandomVariable;
 import net.finmath.stochastic.RandomVariableInterface;

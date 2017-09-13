@@ -66,7 +66,7 @@ public class TestCurvesFromLIBORModel {
 		int maturityInYears = 5;
 		int forwardStartTimeInYears = 0;
 		// Create Analytic Swap
-		AbstractAnalyticProduct swapAnalytic = createSwapAnalytic(maturityInYears,forwardStartTimeInYears,randomVariableFactory);
+		AbstractAnalyticProduct swapAnalytic = createSwapAnalytic(maturityInYears,forwardStartTimeInYears);
 		// Create Monte Carlo Swap
 		AbstractLIBORMonteCarloProduct swapMonteCarlo = createSwap(maturityInYears,forwardStartTimeInYears,randomVariableFactory);
 		
@@ -100,7 +100,7 @@ public class TestCurvesFromLIBORModel {
         // Get value of analytic swap
 		net.finmath.analytic.model.curves.DiscountCurveInterface discountCurve = net.finmath.analytic.model.curves.DiscountCurve.createDiscountCurveFromMonteCarloLiborModel("forwardCurve",liborMarketModel, evaluationTime);
 		
-		double valueWithCurves = swapAnalytic.getValue(0.0, new AnalyticModel(new CurveInterface[]{forwardCurve,discountCurve})).getAverage();
+		double valueWithCurves = swapAnalytic.getValue(0.0, new AnalyticModel(randomVariableFactory, new CurveInterface[]{forwardCurve,discountCurve})).getAverage();
 		
 		Assert.assertEquals(valueMonteCarlo,valueWithCurves,1E-4); //True if forwardStartTimeInYears = 0;
 		
@@ -262,7 +262,7 @@ public class TestCurvesFromLIBORModel {
 	
 	
 	
-	public static AbstractAnalyticProduct createSwapAnalytic(int maturityInYears, int forwardStartTimeInYears, AbstractRandomVariableFactory factory){
+	public static AbstractAnalyticProduct createSwapAnalytic(int maturityInYears, int forwardStartTimeInYears){
 		
 	//1)   Construct payer and receiver leg
     //1.1) Generate a schedule
@@ -312,8 +312,8 @@ public class TestCurvesFromLIBORModel {
 		    double spreadPayer     = 0.0;
 			double spreadReceiver  = 0.01;
    //1.3) Create legs: receive fixed, pay float
-			SwapLeg legPayer    = new SwapLeg(schedulePayer, "forwardCurve", spreadPayer, "DiscountCurveFromForwardCurveforwardCurve)",factory);
-			SwapLeg legReceiver = new SwapLeg(scheduleReceiver, null, spreadReceiver, "DiscountCurveFromForwardCurveforwardCurve)",factory);
+			SwapLeg legPayer    = new SwapLeg(schedulePayer, "forwardCurve", spreadPayer, "DiscountCurveFromForwardCurveforwardCurve)");
+			SwapLeg legReceiver = new SwapLeg(scheduleReceiver, null, spreadReceiver, "DiscountCurveFromForwardCurveforwardCurve)");
    //2)  Create Swap
 			Swap swap = new Swap(legReceiver, legPayer);
 		  

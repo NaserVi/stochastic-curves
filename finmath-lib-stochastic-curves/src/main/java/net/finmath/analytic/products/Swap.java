@@ -10,10 +10,8 @@ import net.finmath.analytic.model.AnalyticModelInterface;
 import net.finmath.analytic.model.curves.CurveInterface;
 import net.finmath.analytic.model.curves.DiscountCurveFromForwardCurve;
 import net.finmath.analytic.model.curves.DiscountCurveInterface;
-import net.finmath.analytic.model.curves.ForwardCurve;
 import net.finmath.analytic.model.curves.ForwardCurveInterface;
 import net.finmath.montecarlo.AbstractRandomVariableFactory;
-import net.finmath.montecarlo.RandomVariable;
 import net.finmath.stochastic.RandomVariableInterface;
 import net.finmath.time.RegularSchedule;
 import net.finmath.time.ScheduleInterface;
@@ -66,12 +64,11 @@ public class Swap extends AbstractAnalyticProduct implements AnalyticProductInte
 			ScheduleInterface schedulePayLeg,
 			String forwardCurvePayName, double spreadPay,
 			String discountCurvePayName,
-			boolean isNotionalExchanged,
-			AbstractRandomVariableFactory factory
+			boolean isNotionalExchanged
 			) {
 		super();
-		legReceiver		= new SwapLeg(scheduleReceiveLeg, forwardCurveReceiveName, spreadReceive, discountCurveReceiveName, isNotionalExchanged /* Notional Exchange */, factory);
-		legPayer		= new SwapLeg(schedulePayLeg, forwardCurvePayName, spreadPay, discountCurvePayName, isNotionalExchanged /* Notional Exchange */,factory);
+		legReceiver		= new SwapLeg(scheduleReceiveLeg, forwardCurveReceiveName, spreadReceive, discountCurveReceiveName, isNotionalExchanged /* Notional Exchange */);
+		legPayer		= new SwapLeg(schedulePayLeg, forwardCurvePayName, spreadPay, discountCurvePayName, isNotionalExchanged /* Notional Exchange */);
 	}
 
 	/**
@@ -91,10 +88,9 @@ public class Swap extends AbstractAnalyticProduct implements AnalyticProductInte
 			String discountCurveReceiveName,
 			ScheduleInterface schedulePayLeg,
 			String forwardCurvePayName, double spreadPay,
-			String discountCurvePayName,
-			AbstractRandomVariableFactory factory
+			String discountCurvePayName
 			) {
-		this(scheduleReceiveLeg, forwardCurveReceiveName, spreadReceive, discountCurveReceiveName, schedulePayLeg, forwardCurvePayName, spreadPay, discountCurvePayName, true,factory);
+		this(scheduleReceiveLeg, forwardCurveReceiveName, spreadReceive, discountCurveReceiveName, schedulePayLeg, forwardCurvePayName, spreadPay, discountCurvePayName, true);
 	}
 
 	/**
@@ -114,7 +110,7 @@ public class Swap extends AbstractAnalyticProduct implements AnalyticProductInte
 			String forwardCurvePayName,
 			String discountCurvePayName,
 			AbstractRandomVariableFactory factory) {
-		this(scheduleReceiveLeg, null, spreadReceive, discountCurveReceiveName, schedulePayLeg, forwardCurvePayName, 0.0, discountCurvePayName, true, factory);
+		this(scheduleReceiveLeg, null, spreadReceive, discountCurveReceiveName, schedulePayLeg, forwardCurvePayName, 0.0, discountCurvePayName, true);
 	}
 
 

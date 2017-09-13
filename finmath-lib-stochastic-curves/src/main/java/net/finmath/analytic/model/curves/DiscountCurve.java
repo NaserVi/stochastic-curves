@@ -8,14 +8,13 @@ package net.finmath.analytic.model.curves;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.stream.DoubleStream;
 
 import net.finmath.analytic.model.AnalyticModelInterface;
 import net.finmath.exception.CalculationException;
-import net.finmath.montecarlo.interestrate.LIBORMarketModel;
+import net.finmath.montecarlo.RandomVariable;
 import net.finmath.montecarlo.interestrate.LIBORModelMonteCarloSimulationInterface;
-import net.finmath.montecarlo.model.AbstractModel;
 //import net.finmath.montecarlo.AbstractRandomVariableFactory;
 //import net.finmath.montecarlo.interestrate.LIBORMarketModel;
 //import net.finmath.montecarlo.interestrate.LIBORModelMonteCarloSimulationInterface;
@@ -154,6 +153,15 @@ public class DiscountCurve extends Curve implements Serializable, DiscountCurveI
 		return createDiscountCurveFromDiscountFactors(name, times, givenDiscountFactors, isParameter, interpolationMethod, extrapolationMethod, interpolationEntity);
 	}
 
+	public static DiscountCurve createDiscountCurveFromDiscountFactors(
+			String name,
+			double[] times,
+			double[] givenDiscountFactors,
+			InterpolationMethod interpolationMethod, ExtrapolationMethod extrapolationMethod, InterpolationEntity interpolationEntity) {
+		RandomVariableInterface[] givenDiscountFactorsAsRandomVariables = DoubleStream.of(givenDiscountFactors).mapToObj(x -> { return new RandomVariable(x); }).toArray(RandomVariableInterface[]::new);
+		return createDiscountCurveFromDiscountFactors(name, times, givenDiscountFactorsAsRandomVariables, interpolationMethod, extrapolationMethod, interpolationEntity);
+	}
+
 	/**
 	 * Create a discount curve from given times and given discount factors using default interpolation and extrapolation methods.
 	 * 
@@ -170,6 +178,11 @@ public class DiscountCurve extends Curve implements Serializable, DiscountCurveI
 		}
 
 		return discountFactors;
+	}
+
+	public static DiscountCurve createDiscountCurveFromDiscountFactors(String name, double[] times, double[] givenDiscountFactors) {
+		RandomVariableInterface[] givenDiscountFactorsAsRandomVariables = DoubleStream.of(givenDiscountFactors).mapToObj(x -> { return new RandomVariable(x); }).toArray(RandomVariableInterface[]::new);
+		return createDiscountCurveFromDiscountFactors(name, times, givenDiscountFactorsAsRandomVariables);
 	}
 
 	/**

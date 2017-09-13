@@ -7,7 +7,6 @@ package net.finmath.analytic.model.curves;
 
 import java.time.LocalDate;
 
-import net.finmath.montecarlo.AbstractRandomVariableFactory;
 import net.finmath.stochastic.RandomVariableInterface;
 
 /**
@@ -20,7 +19,6 @@ public abstract class AbstractCurve implements CurveInterface, Cloneable {
 
 	private	final	LocalDate	referenceDate;
 	private final	String		name;
-	
 
 	/**
 	 * @param name The name of this curve.
@@ -79,6 +77,4 @@ public abstract class AbstractCurve implements CurveInterface, Cloneable {
 	public String toString() {
 		return "AbstractCurve [name=" + name + ", referenceDate=" + referenceDate + "]";
 	}
-	
-
 }

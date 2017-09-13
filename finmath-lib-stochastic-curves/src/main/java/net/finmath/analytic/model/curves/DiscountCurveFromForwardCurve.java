@@ -7,7 +7,6 @@ package net.finmath.analytic.model.curves;
 import java.io.Serializable;
 
 import net.finmath.analytic.model.AnalyticModelInterface;
-import net.finmath.montecarlo.AbstractRandomVariableFactory;
 import net.finmath.montecarlo.RandomVariable;
 import net.finmath.stochastic.RandomVariableInterface;
 
@@ -143,7 +142,14 @@ public class DiscountCurveFromForwardCurve extends AbstractCurve implements Seri
 		return getDiscountFactor(model, time);
 	}
 
+	@Override
+	public RandomVariableInterface[] getParameter() {
+		return null;
+	}
 
+	@Override
+	public void setParameter(RandomVariableInterface[] parameter) {
+	}
 
 	@Override
 	public CurveBuilderInterface getCloneBuilder() throws CloneNotSupportedException {
@@ -192,5 +198,4 @@ public class DiscountCurveFromForwardCurve extends AbstractCurve implements Seri
 			return false;
 		return true;
 	}
-	
 }

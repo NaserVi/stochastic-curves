@@ -526,5 +526,4 @@ public class Curve extends AbstractCurve implements Serializable, Cloneable {
 				+ interpolationEntity + ", rationalFunctionInterpolation=" + rationalFunctionInterpolation
 				+ ", toString()=" + super.toString() + ",\n" + curveTableString + "]";
 	}
-	
 }
