@@ -1,4 +1,4 @@
-package net.finmath.marketdata.model.curves.test;
+package net.finmath.analytic.model.curves.test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
